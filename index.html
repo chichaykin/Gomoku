@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#1e2430" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Gomoku" />
+    <meta name="description" content="Five in a Row (Gomoku) PWA" />
+    <title>Gomoku — Five in a Row</title>
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon-180x180.png" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-container theme-wood">
+      <!-- Top HUD Bar -->
+      <header id="top-bar" class="hud-top">
+        <div class="hud-left">
+          <div id="turn-indicator" class="turn-indicator">
+            <span id="turn-dot" class="turn-dot player-black"></span>
+            <span id="turn-text" class="turn-text" data-i18n="turnBlack">Black to move</span>
+          </div>
+        </div>
+        <div class="hud-right">
+          <span id="move-counter" class="hud-badge">Move 1</span>
+          <span id="game-timer" class="hud-badge">00:00</span>
+        </div>
+      </header>
+
+      <!-- Center Board Area -->
+      <main id="board-container" class="board-container">
+        <canvas id="board-canvas"></canvas>
+      </main>
+
+      <!-- Bottom HUD Bar -->
+      <footer id="bottom-bar" class="hud-bottom">
+        <div class="hud-actions">
+          <button id="btn-undo" class="btn btn-secondary" data-i18n="undo" title="Undo move">
+            Undo
+          </button>
+          <button id="btn-place" class="btn btn-primary btn-place hidden" data-i18n="place" title="Place stone">
+            Place
+          </button>
+          <button id="btn-new-game" class="btn btn-secondary" data-i18n="newGame" title="New game">
+            New game
+          </button>
+          <button id="btn-settings" class="btn btn-icon" title="Settings" aria-label="Settings">
+            ⚙️
+          </button>
+        </div>
+      </footer>
+
+      <!-- Modals Container -->
+      <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+        <!-- Content will be injected dynamically by modals.ts -->
+        <div id="modal-card" class="modal-card"></div>
+      </div>
+
+      <!-- Toast notifications -->
+      <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "gomoku-pwa",
+  "version": "1.0.0",
+  "description": "Gomoku / Five in a Row PWA",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate-pwa-assets": "pwa-assets-generator"
+  },
+  "devDependencies": {
+    "@vite-pwa/assets-generator": "^0.2.6",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21",
+    "vite-plugin-pwa": "^0.21.2",
+    "vitest": "^3.2.7"
+  }
+}
