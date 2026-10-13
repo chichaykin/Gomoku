@@ -6,6 +6,7 @@ export interface HudCallbacks {
   onPlace: () => void
   onNewGame: () => void
   onOpenSettings: () => void
+  onOpenAbout?: () => void
 }
 
 export class Hud {
@@ -17,6 +18,7 @@ export class Hud {
   private btnPlace: HTMLButtonElement | null
   private btnNewGame: HTMLButtonElement | null
   private btnSettings: HTMLButtonElement | null
+  private btnAbout: HTMLButtonElement | null
   private toastElement: HTMLElement | null
 
   private timerInterval: number | null = null
@@ -32,12 +34,14 @@ export class Hud {
     this.btnPlace = document.getElementById('btn-place') as HTMLButtonElement | null
     this.btnNewGame = document.getElementById('btn-new-game') as HTMLButtonElement | null
     this.btnSettings = document.getElementById('btn-settings') as HTMLButtonElement | null
+    this.btnAbout = document.getElementById('btn-about') as HTMLButtonElement | null
     this.toastElement = document.getElementById('toast')
 
     this.btnUndo?.addEventListener('click', callbacks.onUndo)
     this.btnPlace?.addEventListener('click', callbacks.onPlace)
     this.btnNewGame?.addEventListener('click', callbacks.onNewGame)
     this.btnSettings?.addEventListener('click', callbacks.onOpenSettings)
+    this.btnAbout?.addEventListener('click', () => callbacks.onOpenAbout?.())
   }
 
   updateTurn(player: Player, isAiThinking = false): void {

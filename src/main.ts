@@ -65,7 +65,8 @@ const hud = new Hud({
   onUndo: () => handleUndo(),
   onPlace: () => inputController?.confirmGhostMove(),
   onNewGame: () => handleNewGameRequest(),
-  onOpenSettings: () => modals.showSettings(settings, onSettingsChanged)
+  onOpenSettings: () => modals.showSettings(settings, onSettingsChanged),
+  onOpenAbout: () => modals.showAbout(settings)
 })
 
 const modals = new ModalManager({
@@ -74,7 +75,8 @@ const modals = new ModalManager({
   onPlayAgain: () => startFreshGame(),
   onUndoLastMove: () => handleUndo(),
   onInstallClick: () => triggerInstallPrompt(),
-  getStats: () => storage.loadStats()
+  getStats: () => storage.loadStats(),
+  getSettings: () => settings
 })
 
 inputController = new InputController(canvas, renderer, {

@@ -33,4 +33,16 @@ describe('i18n module', () => {
     expect(getLang()).toBe('ru')
     expect(t('newGame')).toBe('Новая игра')
   })
+
+  it('provides description and history in selected language', () => {
+    setLang('en')
+    expect(t('aboutTitle')).toBe('About Gomoku')
+    expect(t('historyP1')).toContain('China')
+    expect(t('historyP2')).toContain('Japan')
+
+    setLang('ru')
+    expect(t('aboutTitle')).toBe('О Гомоку')
+    expect(t('historyP1')).toContain('Китае')
+    expect(t('historyP2')).toContain('Японию')
+  })
 })

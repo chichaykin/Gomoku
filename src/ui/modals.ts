@@ -1,5 +1,5 @@
 import { BoardSize, Difficulty, Mode, Player, Settings, Theme } from '../core/types'
-import { setLang, t } from '../i18n'
+import { getLang, setLang, t } from '../i18n'
 import { StatsRecord } from '../storage'
 
 export interface ModalCallbacks {
@@ -9,6 +9,7 @@ export interface ModalCallbacks {
   onUndoLastMove: () => void
   onInstallClick?: () => void
   getStats: () => StatsRecord
+  getSettings?: () => Settings
 }
 
 export class ModalManager {
@@ -164,6 +165,7 @@ export class ModalManager {
 
         <!-- Extra action buttons -->
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+          <button id="btn-show-about" class="btn btn-secondary" style="flex: 1;">📖 ${t('aboutGame')}</button>
           <button id="btn-show-stats" class="btn btn-secondary" style="flex: 1;">📊 ${t('stats')}</button>
           <button id="btn-modal-install" class="btn btn-primary ${this.canInstall ? '' : 'hidden'}" style="flex: 1;">📥 ${t('install')}</button>
         </div>
@@ -242,6 +244,10 @@ export class ModalManager {
     oneTapCheck?.addEventListener('change', () => {
       settings.oneTapMove = oneTapCheck.checked
       onSettingsChanged({ ...settings })
+    })
+
+    document.getElementById('btn-show-about')?.addEventListener('click', () => {
+      this.showAbout(settings)
     })
 
     document.getElementById('btn-show-stats')?.addEventListener('click', () => {
@@ -392,6 +398,80 @@ export class ModalManager {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
     document.getElementById('btn-ios-close')?.addEventListener('click', () => this.close())
+
+    this.overlay.classList.remove('hidden')
+  }
+
+  showAbout(settings?: Settings): void {
+    if (!this.overlay || !this.card) return
+
+    const s = settings || this.callbacks.getSettings?.()
+    const currentLang = getLang()
+
+    this.card.innerHTML = `
+      <div class="modal-header">
+        <h2 class="modal-title">📖 ${t('aboutTitle')}</h2>
+        <button id="modal-close-btn" class="btn btn-icon" aria-label="${t('close')}">✕</button>
+      </div>
+      <div class="modal-body about-body">
+        <div class="about-lang-switch">
+          <span style="font-size: 0.85rem; color: var(--text-muted); align-self: center;">${t('language')}:</span>
+          <button id="btn-about-lang-en" class="btn btn-sm ${currentLang === 'en' ? 'btn-primary' : 'btn-secondary'}">English</button>
+          <button id="btn-about-lang-ru" class="btn btn-sm ${currentLang === 'ru' ? 'btn-primary' : 'btn-secondary'}">Русский</button>
+        </div>
+
+        <section class="about-card-section">
+          <h3 class="about-section-heading">🎯 ${t('rulesTitle')}</h3>
+          <p class="about-paragraph">${t('rulesIntro')}</p>
+          <ul class="about-rules-list">
+            <li>${t('rule1')}</li>
+            <li>${t('rule2')}</li>
+            <li>${t('rule3')}</li>
+            <li>${t('rule4')}</li>
+          </ul>
+        </section>
+
+        <section class="about-card-section">
+          <h3 class="about-section-heading">⚔️ ${t('tacticsTitle')}</h3>
+          <p class="about-paragraph">${t('tacticsDesc')}</p>
+        </section>
+
+        <section class="about-card-section">
+          <h3 class="about-section-heading">📜 ${t('historyTitle')}</h3>
+          <p class="about-paragraph">${t('historyP1')}</p>
+          <p class="about-paragraph">${t('historyP2')}</p>
+          <p class="about-paragraph">${t('historyP3')}</p>
+        </section>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-about-close-btn" class="btn btn-primary">${t('close')}</button>
+      </div>
+    `
+
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
+    document.getElementById('modal-about-close-btn')?.addEventListener('click', () => this.close())
+
+    document.getElementById('btn-about-lang-en')?.addEventListener('click', () => {
+      if (getLang() !== 'en') {
+        setLang('en')
+        if (s) {
+          s.lang = 'en'
+          this.callbacks.onSettingsChanged(s)
+        }
+        this.showAbout(s)
+      }
+    })
+
+    document.getElementById('btn-about-lang-ru')?.addEventListener('click', () => {
+      if (getLang() !== 'ru') {
+        setLang('ru')
+        if (s) {
+          s.lang = 'ru'
+          this.callbacks.onSettingsChanged(s)
+        }
+        this.showAbout(s)
+      }
+    })
 
     this.overlay.classList.remove('hidden')
   }
