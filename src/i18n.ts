@@ -78,7 +78,24 @@ export const enDict = {
   authorTitle: 'Author & GitHub',
   authorDesc: 'Created with precision and passion by Mikhail Chichaykin. Pure vanilla TypeScript, HTML5 Canvas 2D, and procedural Web Audio with zero runtime dependencies.',
   authorGithub: 'GitHub Profile',
-  authorRepo: 'Repository'
+  authorRepo: 'Repository',
+  feedbackButton: 'Feedback',
+  feedbackTitle: 'Feedback & Ideas',
+  feedbackDesc: 'Share your ideas for improving the game, report a bug, or send warm feedback directly to the developer.',
+  feedbackCategory: 'Category',
+  feedbackTypeIdea: '💡 Idea / Suggestion',
+  feedbackTypeBug: '🐛 Bug Report',
+  feedbackTypeGeneral: '💬 General Feedback',
+  feedbackContactLabel: 'Your contact (optional)',
+  feedbackContactPlaceholder: 'Email, Telegram, or GitHub username',
+  feedbackMessageLabel: 'Message',
+  feedbackMessagePlaceholder: 'Describe your idea, what happened, or your thoughts...',
+  feedbackViaGithub: 'Open GitHub Issue',
+  feedbackViaEmail: 'Send via Email',
+  feedbackCopy: 'Copy message',
+  feedbackCopied: 'Message copied to clipboard!',
+  feedbackEmptyWarning: 'Please write a message before sending.',
+  feedbackSent: 'Thank you for your feedback!'
 } as const
 
 export type Key = keyof typeof enDict
@@ -161,7 +178,24 @@ export const ruDict: Record<Key, string> = {
   authorTitle: 'Автор и GitHub',
   authorDesc: 'Разработано Михаилом Чичайкиным. Чистый TypeScript, HTML5 Canvas 2D и процедурный синтез Web Audio без внешних библиотек и зависимостей.',
   authorGithub: 'Профиль GitHub',
-  authorRepo: 'Репозиторий проекта'
+  authorRepo: 'Репозиторий проекта',
+  feedbackButton: 'Обратная связь',
+  feedbackTitle: 'Обратная связь и идеи',
+  feedbackDesc: 'Поделитесь идеей по улучшению игры, сообщите об ошибке или оставьте отзыв разработчику.',
+  feedbackCategory: 'Категория',
+  feedbackTypeIdea: '💡 Идея или предложение',
+  feedbackTypeBug: '🐛 Сообщение об ошибке',
+  feedbackTypeGeneral: '💬 Общий отзыв',
+  feedbackContactLabel: 'Ваш контакт (необязательно)',
+  feedbackContactPlaceholder: 'Email, Telegram или ник на GitHub',
+  feedbackMessageLabel: 'Сообщение',
+  feedbackMessagePlaceholder: 'Опишите вашу идею, проблему или впечатление об игре...',
+  feedbackViaGithub: 'Открыть в GitHub Issues',
+  feedbackViaEmail: 'Отправить по Email',
+  feedbackCopy: 'Скопировать текст',
+  feedbackCopied: 'Текст отзыва скопирован в буфер обмена!',
+  feedbackEmptyWarning: 'Пожалуйста, напишите текст сообщения перед отправкой.',
+  feedbackSent: 'Спасибо за ваш отзыв!'
 }
 
 let currentLang: Lang = (() => {

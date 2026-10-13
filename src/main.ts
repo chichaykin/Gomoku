@@ -77,7 +77,8 @@ const modals = new ModalManager({
   onUndoLastMove: () => handleUndo(),
   onInstallClick: () => triggerInstallPrompt(),
   getStats: () => storage.loadStats(),
-  getSettings: () => settings
+  getSettings: () => settings,
+  onToast: (msg) => hud.showToast(msg)
 })
 
 inputController = new InputController(canvas, renderer, {

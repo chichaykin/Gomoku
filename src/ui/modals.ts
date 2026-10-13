@@ -10,6 +10,7 @@ export interface ModalCallbacks {
   onInstallClick?: () => void
   getStats: () => StatsRecord
   getSettings?: () => Settings
+  onToast?: (message: string) => void
 }
 
 export class ModalManager {
@@ -179,10 +180,11 @@ export class ModalManager {
         </div>
 
         <!-- Extra action buttons -->
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
-          <button id="btn-show-about" class="btn btn-secondary" style="flex: 1;">📖 ${t('aboutGame')}</button>
-          <button id="btn-show-stats" class="btn btn-secondary" style="flex: 1;">📊 ${t('stats')}</button>
-          <button id="btn-modal-install" class="btn btn-primary ${this.canInstall ? '' : 'hidden'}" style="flex: 1;">📥 ${t('install')}</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+          <button id="btn-show-about" class="btn btn-secondary" style="flex: 1 1 45%;">📖 ${t('aboutGame')}</button>
+          <button id="btn-show-stats" class="btn btn-secondary" style="flex: 1 1 45%;">📊 ${t('stats')}</button>
+          <button id="btn-show-feedback" class="btn btn-secondary" style="flex: 1 1 45%;">💬 ${t('feedbackButton')}</button>
+          <button id="btn-modal-install" class="btn btn-primary ${this.canInstall ? '' : 'hidden'}" style="flex: 1 1 45%;">📥 ${t('install')}</button>
         </div>
       </div>
       <div class="modal-footer">
@@ -267,6 +269,10 @@ export class ModalManager {
 
     document.getElementById('btn-show-stats')?.addEventListener('click', () => {
       this.showStats(this.callbacks.getStats())
+    })
+
+    document.getElementById('btn-show-feedback')?.addEventListener('click', () => {
+      this.showFeedback(settings)
     })
 
     document.getElementById('btn-modal-install')?.addEventListener('click', () => {
@@ -551,6 +557,9 @@ export class ModalManager {
             <a href="https://github.com/chichaykin/Gomoku" target="_blank" rel="noopener noreferrer" class="btn btn-secondary about-author-link">
               <span>⭐ ${t('authorRepo')}</span>
             </a>
+            <button id="btn-about-feedback" class="btn btn-primary about-author-link" style="cursor: pointer;">
+              <span>💬 ${t('feedbackButton')}</span>
+            </button>
           </div>
         </section>
       </div>
@@ -561,6 +570,10 @@ export class ModalManager {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
     document.getElementById('modal-about-close-btn')?.addEventListener('click', () => this.close())
+
+    document.getElementById('btn-about-feedback')?.addEventListener('click', () => {
+      this.showFeedback(s)
+    })
 
     document.getElementById('btn-about-lang-en')?.addEventListener('click', () => {
       if (getLang() !== 'en') {
@@ -581,6 +594,143 @@ export class ModalManager {
           this.callbacks.onSettingsChanged(s)
         }
         this.showAbout(s)
+      }
+    })
+
+    this.overlay.classList.remove('hidden')
+  }
+
+  showFeedback(settings?: Settings): void {
+    if (!this.overlay || !this.card) return
+
+    const s = settings || this.callbacks.getSettings?.()
+
+    this.card.innerHTML = `
+      <div class="modal-header">
+        <h2 class="modal-title">💬 ${t('feedbackTitle')}</h2>
+        <button id="modal-close-btn" class="btn btn-icon" aria-label="${t('close')}">✕</button>
+      </div>
+      <div class="modal-body feedback-body">
+        <p class="feedback-desc">${t('feedbackDesc')}</p>
+
+        <!-- Category -->
+        <div class="feedback-row">
+          <label class="setting-label" for="feedback-type">${t('feedbackCategory')}</label>
+          <div class="setting-control" style="width: 100%;">
+            <select id="feedback-type" style="width: 100%;">
+              <option value="idea">${t('feedbackTypeIdea')}</option>
+              <option value="bug">${t('feedbackTypeBug')}</option>
+              <option value="general">${t('feedbackTypeGeneral')}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Contact (optional) -->
+        <div class="feedback-row">
+          <label class="setting-label" for="feedback-contact">${t('feedbackContactLabel')}</label>
+          <input type="text" id="feedback-contact" class="feedback-input" placeholder="${t('feedbackContactPlaceholder')}" />
+        </div>
+
+        <!-- Message -->
+        <div class="feedback-row">
+          <label class="setting-label" for="feedback-message">${t('feedbackMessageLabel')}</label>
+          <textarea id="feedback-message" class="feedback-textarea" rows="4" placeholder="${t('feedbackMessagePlaceholder')}"></textarea>
+        </div>
+
+        <!-- Send options -->
+        <div class="feedback-actions">
+          <button id="btn-send-github" class="btn btn-primary feedback-send-btn">
+            🐙 ${t('feedbackViaGithub')}
+          </button>
+          <button id="btn-send-email" class="btn btn-secondary feedback-send-btn">
+            ✉️ ${t('feedbackViaEmail')}
+          </button>
+          <button id="btn-copy-feedback" class="btn btn-secondary feedback-send-btn">
+            📋 ${t('feedbackCopy')}
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-feedback-close" class="btn btn-secondary">${t('close')}</button>
+      </div>
+    `
+
+    const getFormData = () => {
+      const messageInput = document.getElementById('feedback-message') as HTMLTextAreaElement | null
+      const contactInput = document.getElementById('feedback-contact') as HTMLInputElement | null
+      const typeSelect = document.getElementById('feedback-type') as HTMLSelectElement | null
+
+      const message = messageInput?.value.trim() || ''
+      const contact = contactInput?.value.trim() || 'Anonymous'
+      const type = typeSelect?.value || 'general'
+
+      return { message, contact, type, messageInput }
+    }
+
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => {
+      if (s) this.showAbout(s)
+      else this.close()
+    })
+
+    document.getElementById('modal-feedback-close')?.addEventListener('click', () => {
+      if (s) this.showAbout(s)
+      else this.close()
+    })
+
+    document.getElementById('btn-send-github')?.addEventListener('click', () => {
+      const { message, contact, type, messageInput } = getFormData()
+      if (!message) {
+        this.callbacks.onToast?.(t('feedbackEmptyWarning'))
+        messageInput?.focus()
+        return
+      }
+
+      const typeLabels: Record<string, string> = {
+        idea: 'Feature Request / Idea',
+        bug: 'Bug Report',
+        general: 'Feedback'
+      }
+      const categoryName = typeLabels[type] || 'Feedback'
+      const title = `[${categoryName}] ${message.slice(0, 50)}${message.length > 50 ? '...' : ''}`
+      const body = `### Feedback Type\n${categoryName}\n\n### Message\n${message}\n\n### Contact\n${contact}\n\n### Environment\n- URL: ${window.location.href}\n- User Agent: ${navigator.userAgent}\n- Screen: ${window.innerWidth}x${window.innerHeight} (DPR: ${window.devicePixelRatio || 1})\n- Date: ${new Date().toISOString()}`
+
+      const issueUrl = `https://github.com/chichaykin/Gomoku/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`
+      window.open(issueUrl, '_blank', 'noopener,noreferrer')
+      this.callbacks.onToast?.(t('feedbackSent'))
+      this.close()
+    })
+
+    document.getElementById('btn-send-email')?.addEventListener('click', () => {
+      const { message, contact, type, messageInput } = getFormData()
+      if (!message) {
+        this.callbacks.onToast?.(t('feedbackEmptyWarning'))
+        messageInput?.focus()
+        return
+      }
+
+      const subject = `[Gomoku] ${type.toUpperCase()}: Feedback`
+      const body = `Category: ${type}\nContact: ${contact}\n\nMessage:\n${message}\n\nDevice: ${navigator.userAgent}`
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      window.location.href = mailtoUrl
+      this.callbacks.onToast?.(t('feedbackSent'))
+      this.close()
+    })
+
+    document.getElementById('btn-copy-feedback')?.addEventListener('click', () => {
+      const { message, contact, type, messageInput } = getFormData()
+      if (!message) {
+        this.callbacks.onToast?.(t('feedbackEmptyWarning'))
+        messageInput?.focus()
+        return
+      }
+
+      const formatted = `[Gomoku Feedback]\nCategory: ${type}\nContact: ${contact}\nMessage:\n${message}`
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(formatted).then(() => {
+          this.callbacks.onToast?.(t('feedbackCopied'))
+        }).catch(() => {
+          this.callbacks.onToast?.(t('feedbackCopied'))
+        })
       }
     })
 

@@ -488,6 +488,64 @@ html, body {
   transform: translateY(-1px);
 }
 
+/* Feedback modal form */
+.feedback-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedback-desc {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.feedback-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback-input,
+.feedback-textarea {
+  background-color: var(--btn-sec-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.feedback-input:focus,
+.feedback-textarea:focus {
+  outline: none;
+  border-color: var(--gold-accent, #d4af37);
+}
+
+.feedback-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.feedback-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.feedback-send-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 0.9rem;
+  padding: 10px;
+}
+
 /* Medieval Victory Scroll Modal */
 .medieval-scroll-content {
   display: flex;
