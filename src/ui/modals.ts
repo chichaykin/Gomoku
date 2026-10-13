@@ -36,6 +36,21 @@ export class ModalManager {
         this.close()
       }
     })
+
+    // Return to game over modal after inspecting board
+    const inspectBtn = document.getElementById('btn-inspect-return')
+    inspectBtn?.addEventListener('click', () => {
+      inspectBtn.classList.add('hidden')
+      if (this.lastGameOverArgs) {
+        this.showGameOver(
+          this.lastGameOverArgs.winner,
+          this.lastGameOverArgs.isDraw,
+          this.lastGameOverArgs.mode,
+          this.lastGameOverArgs.humanColor,
+          this.lastGameOverArgs.statsSummary
+        )
+      }
+    })
   }
 
   setInstallAvailable(available: boolean): void {
@@ -303,48 +318,130 @@ export class ModalManager {
     this.overlay.classList.remove('hidden')
   }
 
-  showGameOver(winner: Player | null, isDraw: boolean, mode: Mode, humanColor: Player): void {
+  private lastGameOverArgs: {
+    winner: Player | null
+    isDraw: boolean
+    mode: Mode
+    humanColor: Player
+    statsSummary?: { elapsedSeconds: number; movesCount: number; difficulty: Difficulty }
+  } | null = null
+
+  showGameOver(
+    winner: Player | null,
+    isDraw: boolean,
+    mode: Mode,
+    humanColor: Player,
+    statsSummary?: { elapsedSeconds: number; movesCount: number; difficulty: Difficulty }
+  ): void {
     if (!this.overlay || !this.card) return
 
+    this.lastGameOverArgs = { winner, isDraw, mode, humanColor, statsSummary }
+
     let title = ''
+    let subtitle = ''
     let icon = '🏆'
+    let sealText = '五目'
+    let sealClass = 'seal-win'
 
     if (isDraw) {
       title = t('draw')
+      subtitle = t('rule4')
       icon = '🤝'
+      sealText = '和'
+      sealClass = 'seal-draw'
     } else if (mode === 'ai') {
       if (winner === humanColor) {
-        title = t('youWin')
-        icon = '🎉'
+        title = t('victoryTitle')
+        subtitle = t('victorySub')
+        icon = '👑'
+        sealText = '勝'
+        sealClass = 'seal-win'
       } else {
-        title = t('youLose')
-        icon = '💔'
+        title = t('defeatTitle')
+        subtitle = t('defeatSub')
+        icon = '🍂'
+        sealText = '道'
+        sealClass = 'seal-lose'
       }
     } else {
       title = winner === 1 ? t('blackWins') : t('whiteWins')
+      subtitle = t('victorySub')
+      sealText = winner === 1 ? '黒' : '白'
+      sealClass = 'seal-win'
+    }
+
+    let statsHtml = ''
+    if (statsSummary) {
+      const mins = Math.floor(statsSummary.elapsedSeconds / 60)
+      const secs = statsSummary.elapsedSeconds % 60
+      const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+      const timeStr = `${pad(mins)}:${pad(secs)}`
+
+      let opponentStr = ''
+      if (mode === 'ai') {
+        const diffMap: Record<Difficulty, string> = {
+          easy: t('diffEasy'),
+          medium: t('diffMedium'),
+          hard: t('diffHard')
+        }
+        opponentStr = `${t('modeAi')} (${diffMap[statsSummary.difficulty]})`
+      } else {
+        opponentStr = t('modePvp')
+      }
+
+      statsHtml = `
+        <div class="scroll-stats-grid">
+          <div class="scroll-stat-item">
+            <span class="stat-label">⏱️ ${t('time')}</span>
+            <span class="stat-val">${timeStr}</span>
+          </div>
+          <div class="scroll-stat-item">
+            <span class="stat-label">🎯 ${t('turns')}</span>
+            <span class="stat-val">${statsSummary.movesCount}</span>
+          </div>
+          <div class="scroll-stat-item">
+            <span class="stat-label">🥋 ${t('opponent')}</span>
+            <span class="stat-val">${opponentStr}</span>
+          </div>
+        </div>
+      `
     }
 
     this.card.innerHTML = `
-      <div class="modal-header">
-        <h2 class="modal-title">${icon} ${title}</h2>
-      </div>
-      <div class="modal-body" style="text-align: center; font-size: 1.1rem; padding: 16px 0;">
-        <p>${title}</p>
-      </div>
-      <div class="modal-footer" style="justify-content: center; gap: 12px;">
-        <button id="btn-gameover-undo" class="btn btn-secondary">${t('undoMove')}</button>
-        <button id="btn-gameover-again" class="btn btn-primary">${t('playAgain')}</button>
+      <div class="medieval-scroll-content">
+        <div class="seal-container">
+          <div class="imperial-seal ${sealClass}">
+            <span class="seal-char">${sealText}</span>
+          </div>
+        </div>
+        <h2 class="modal-title scroll-title">${icon} ${title}</h2>
+        <p class="scroll-subtitle">${subtitle}</p>
+        ${statsHtml}
+        <div class="modal-footer scroll-actions">
+          <button id="btn-gameover-undo" class="btn btn-secondary">${t('undoMove')}</button>
+          <button id="btn-gameover-inspect" class="btn btn-secondary">👁️ ${t('inspectBoard')}</button>
+          <button id="btn-gameover-again" class="btn btn-primary btn-gold">⚔️ ${t('newBattle')}</button>
+        </div>
       </div>
     `
 
+    const inspectBtn = document.getElementById('btn-inspect-return')
+
     document.getElementById('btn-gameover-again')?.addEventListener('click', () => {
       this.close()
+      if (inspectBtn) inspectBtn.classList.add('hidden')
       this.callbacks.onPlayAgain()
     })
 
     document.getElementById('btn-gameover-undo')?.addEventListener('click', () => {
       this.close()
+      if (inspectBtn) inspectBtn.classList.add('hidden')
       this.callbacks.onUndoLastMove()
+    })
+
+    document.getElementById('btn-gameover-inspect')?.addEventListener('click', () => {
+      this.close()
+      if (inspectBtn) inspectBtn.classList.remove('hidden')
     })
 
     this.overlay.classList.remove('hidden')

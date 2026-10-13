@@ -80,28 +80,59 @@ export class SoundService {
 
     try {
       const now = ctx.currentTime
-      // 3-note ascending arpeggio (C5, E5, G5)
-      const notes = [523.25, 659.25, 783.99]
 
-      notes.forEach((freq, idx) => {
+      // 1. Resonant Bronze Temple Gong (low fundamental + inharmonic partials)
+      const gongFreqs = [146.83, 392.0, 587.33, 880.0]
+      const gongGains = [0.35, 0.18, 0.12, 0.06]
+
+      gongFreqs.forEach((freq, i) => {
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
-        osc.type = 'sine'
+        osc.type = i === 0 ? 'sine' : 'triangle'
         osc.frequency.setValueAtTime(freq, now)
 
-        const start = now + idx * 0.12
-        gain.gain.setValueAtTime(0.001, start)
-        gain.gain.linearRampToValueAtTime(0.25, start + 0.02)
-        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.28)
+        gain.gain.setValueAtTime(0.001, now)
+        gain.gain.linearRampToValueAtTime(gongGains[i], now + 0.02)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + (i === 0 ? 2.6 : 1.8))
 
         osc.connect(gain)
         gain.connect(ctx.destination)
 
+        osc.start(now)
+        osc.stop(now + 2.7)
+      })
+
+      // 2. Ceremonial Koto / Shamisen Pentatonic Arpeggio (D4 -> F4 -> G4 -> A4 -> D5)
+      const kotoNotes = [293.66, 349.23, 392.0, 440.0, 587.33]
+
+      kotoNotes.forEach((freq, idx) => {
+        const start = now + 0.12 + idx * 0.18
+
+        const osc = ctx.createOscillator()
+        const filter = ctx.createBiquadFilter()
+        const gain = ctx.createGain()
+
+        // Plucked string acoustic modeling
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(freq, start)
+
+        filter.type = 'lowpass'
+        filter.frequency.setValueAtTime(freq * 3.5, start)
+        filter.frequency.exponentialRampToValueAtTime(freq * 1.1, start + 0.45)
+
+        gain.gain.setValueAtTime(0.001, start)
+        gain.gain.linearRampToValueAtTime(0.22, start + 0.015)
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.8)
+
+        osc.connect(filter)
+        filter.connect(gain)
+        gain.connect(ctx.destination)
+
         osc.start(start)
-        osc.stop(start + 0.3)
+        osc.stop(start + 0.85)
       })
     } catch {
-      // Fail-safe
+      // Audio playback fail-safe
     }
   }
 
@@ -111,26 +142,30 @@ export class SoundService {
 
     try {
       const now = ctx.currentTime
-      // 2 descending notes (440 Hz -> 330 Hz)
-      const notes = [440, 330]
 
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(freq, now)
+      // Contemplative bamboo flute tone (Shakuhachi style gentle descent)
+      const osc = ctx.createOscillator()
+      const filter = ctx.createBiquadFilter()
+      const gain = ctx.createGain()
 
-        const start = now + idx * 0.16
-        gain.gain.setValueAtTime(0.001, start)
-        gain.gain.linearRampToValueAtTime(0.2, start + 0.02)
-        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.26)
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(220.0, now)
+      osc.frequency.exponentialRampToValueAtTime(146.83, now + 0.9)
 
-        osc.connect(gain)
-        gain.connect(ctx.destination)
+      filter.type = 'lowpass'
+      filter.frequency.setValueAtTime(800, now)
+      filter.frequency.exponentialRampToValueAtTime(280, now + 0.9)
 
-        osc.start(start)
-        osc.stop(start + 0.28)
-      })
+      gain.gain.setValueAtTime(0.001, now)
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2)
+
+      osc.connect(filter)
+      filter.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now)
+      osc.stop(now + 1.25)
     } catch {
       // Fail-safe
     }

@@ -1,8 +1,8 @@
 import { registerSW } from 'virtual:pwa-register'
 import { AiClient } from './ai/aiClient'
 import { Game } from './core/game'
-import { Player, Settings, WHITE } from './core/types'
-import { applyI18n, onLangChange, setLang } from './i18n'
+import { Difficulty, Player, Settings, WHITE } from './core/types'
+import { applyI18n, onLangChange, setLang, t } from './i18n'
 import { StorageService } from './storage'
 import { HapticsService } from './ui/haptics'
 import { Hud } from './ui/hud'
@@ -66,7 +66,8 @@ const hud = new Hud({
   onPlace: () => inputController?.confirmGhostMove(),
   onNewGame: () => handleNewGameRequest(),
   onOpenSettings: () => modals.showSettings(settings, onSettingsChanged),
-  onOpenAbout: () => modals.showAbout(settings)
+  onOpenAbout: () => modals.showAbout(settings),
+  onCycleDifficulty: () => handleCycleDifficulty()
 })
 
 const modals = new ModalManager({
@@ -175,6 +176,22 @@ function updateHudTurn(): void {
   hud.updateTurn(game.state.current, isAiThinking)
   hud.updateMoveCount(game.state.moves.length + 1)
   hud.setUndoEnabled(game.state.moves.length > 0)
+  hud.updateDifficulty(settings.difficulty, settings.mode)
+}
+
+function handleCycleDifficulty(): void {
+  sound.playClick()
+  const order: Difficulty[] = ['easy', 'medium', 'hard']
+  const nextIdx = (order.indexOf(settings.difficulty) + 1) % order.length
+  settings.difficulty = order[nextIdx]
+  storage.saveSettings(settings)
+  hud.updateDifficulty(settings.difficulty, settings.mode)
+  const names: Record<Difficulty, string> = {
+    easy: t('diffEasy'),
+    medium: t('diffMedium'),
+    hard: t('diffHard')
+  }
+  hud.showToast(`${t('difficulty')}: ${names[settings.difficulty]}`)
 }
 
 function applyTheme(theme: 'wood' | 'slate'): void {
@@ -269,8 +286,14 @@ function handleGameWon(): void {
     storage.recordGameResult(settings.difficulty, humanWon ? 'win' : 'loss')
   }
 
+  const statsSummary = {
+    elapsedSeconds: hud.getElapsedSeconds(),
+    movesCount: game.state.moves.length,
+    difficulty: settings.difficulty
+  }
+
   setTimeout(() => {
-    modals.showGameOver(winner, false, settings.mode, settings.humanColor)
+    modals.showGameOver(winner, false, settings.mode, settings.humanColor, statsSummary)
   }, 500)
 }
 
@@ -282,8 +305,14 @@ function handleGameDraw(): void {
     storage.recordGameResult(settings.difficulty, 'draw')
   }
 
+  const statsSummary = {
+    elapsedSeconds: hud.getElapsedSeconds(),
+    movesCount: game.state.moves.length,
+    difficulty: settings.difficulty
+  }
+
   setTimeout(() => {
-    modals.showGameOver(null, true, settings.mode, settings.humanColor)
+    modals.showGameOver(null, true, settings.mode, settings.humanColor, statsSummary)
   }, 400)
 }
 
@@ -291,6 +320,7 @@ function handleUndo(): void {
   sound.playClick()
   aiClient.cancelCurrentThinking()
   inputController.clearGhost()
+  document.getElementById('btn-inspect-return')?.classList.add('hidden')
 
   if (settings.mode === 'ai') {
     // If AI's turn is active or last move was AI's, undo 2 moves (AI + human)
@@ -322,6 +352,7 @@ function handleNewGameRequest(): void {
 function startFreshGame(): void {
   aiClient.cancelCurrentThinking()
   inputController.clearGhost()
+  document.getElementById('btn-inspect-return')?.classList.add('hidden')
   renderer.resetView()
   game.reset(settings)
   storage.clearSavedGame()
@@ -350,6 +381,8 @@ function onSettingsChanged(newSettings: Settings): void {
   if (themeChanged) {
     applyTheme(settings.theme)
   }
+
+  hud.updateDifficulty(settings.difficulty, settings.mode)
 
   if (sizeChanged || modeChanged || colorChanged) {
     startFreshGame()

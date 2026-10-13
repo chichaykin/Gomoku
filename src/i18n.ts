@@ -58,7 +58,23 @@ export const enDict = {
   historyTitle: 'History & Origins',
   historyP1: 'Gomoku originated in ancient China over 4,000 years ago under the name Wuziqi (五子棋, literally "Five-Child Chess"), making it one of the oldest board games in history.',
   historyP2: 'Introduced to Japan around the 7th century AD alongside Go, it was known as Kakugo and later Gomoku-narabe (五目並べ, "lining up five points"). "Go" means five and "Moku" signifies grid intersections.',
-  historyP3: 'In the late 19th century, the game gained immense global popularity under names like "Five in a Row" and "Connect Five". To balance the natural advantage of Black moving first, the tournament variant Renju was created in 1899 with opening rules and forbidden moves. Free Gomoku remains the most beloved, intuitive, and accessible format worldwide.'
+  historyP3: 'In the late 19th century, the game gained immense global popularity under names like "Five in a Row" and "Connect Five". To balance the natural advantage of Black moving first, the tournament variant Renju was created in 1899 with opening rules and forbidden moves. Free Gomoku remains the most beloved, intuitive, and accessible format worldwide.',
+  rulesButton: 'Rules',
+  diffEasy: 'Apprentice',
+  diffMedium: 'Master',
+  diffHard: 'Sensei',
+  diffSelectorTitle: 'AI Difficulty',
+  victoryTitle: 'Master’s Triumph',
+  defeatTitle: 'Master’s Lesson',
+  victorySub: 'Five stones have united along the sacred line of wisdom.',
+  defeatSub: 'Every defeat is a step along the path to mastery.',
+  inspectBoard: 'Inspect Board',
+  returnToMenu: 'Results',
+  matchStats: 'Battle Summary',
+  time: 'Time',
+  turns: 'Turns',
+  opponent: 'Opponent',
+  newBattle: 'New Battle'
 } as const
 
 export type Key = keyof typeof enDict
@@ -121,7 +137,23 @@ export const ruDict: Record<Key, string> = {
   historyTitle: 'История возникновения',
   historyP1: 'Гомоку зародилась в Древнем Китае более 4000 лет назад под названием Уцзици (五子棋, буквально «шахматы из пяти фишек»). Это одна из древнейших интеллектуальных игр человечества.',
   historyP2: 'Примерно в VII веке нашей эры игра проникла в Японию вместе с классическим Го, где получила название Какуго, а позднее — Гомоку-нарабэ (五目並べ, «выстраивание пяти точек»). Слово «го» означает пять, а «моку» — пункт или пересечение линий.',
-  historyP3: 'В конце XIX века игра завоевала мировую популярность в Европе и Америке под названиями «Пять в ряд» и «Connect Five». Из-за математического преимущества первого хода у чёрных в 1899 году в Японии были созданы строгие турнирные правила Рэндзю с запретами вилок. Классическое Свободное Гомоку до сих пор остаётся самым популярным, понятным и увлекательным форматом во всём мире.'
+  historyP3: 'В конце XIX века игра завоевала мировую популярность в Европе и Америке под названиями «Пять в ряд» и «Connect Five». Из-за математического преимущества первого хода у чёрных в 1899 году в Японии были созданы строгие турнирные правила Рэндзю с запретами вилок. Классическое Свободное Гомоку до сих пор остаётся самым популярным, понятным и увлекательным форматом во всём мире.',
+  rulesButton: 'Правила',
+  diffEasy: 'Ученик',
+  diffMedium: 'Мастер',
+  diffHard: 'Сенсей',
+  diffSelectorTitle: 'Сложность ИИ',
+  victoryTitle: 'Триумф мастера',
+  defeatTitle: 'Урок мастера',
+  victorySub: 'Пять священных камней сошлись воедино.',
+  defeatSub: 'Поражение — лишь шаг на пути к совершенству.',
+  inspectBoard: 'Осмотреть доску',
+  returnToMenu: 'К результатам',
+  matchStats: 'Итоги битвы',
+  time: 'Время',
+  turns: 'Ходов',
+  opponent: 'Соперник',
+  newBattle: 'Новая битва'
 }
 
 let currentLang: Lang = (() => {

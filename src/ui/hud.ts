@@ -1,4 +1,4 @@
-import { BLACK, Player } from '../core/types'
+import { BLACK, Difficulty, Mode, Player } from '../core/types'
 import { t } from '../i18n'
 
 export interface HudCallbacks {
@@ -7,6 +7,7 @@ export interface HudCallbacks {
   onNewGame: () => void
   onOpenSettings: () => void
   onOpenAbout?: () => void
+  onCycleDifficulty?: () => void
 }
 
 export class Hud {
@@ -19,6 +20,8 @@ export class Hud {
   private btnNewGame: HTMLButtonElement | null
   private btnSettings: HTMLButtonElement | null
   private btnAbout: HTMLButtonElement | null
+  private btnQuickDiff: HTMLElement | null
+  private hudDiffText: HTMLElement | null
   private toastElement: HTMLElement | null
 
   private timerInterval: number | null = null
@@ -35,6 +38,8 @@ export class Hud {
     this.btnNewGame = document.getElementById('btn-new-game') as HTMLButtonElement | null
     this.btnSettings = document.getElementById('btn-settings') as HTMLButtonElement | null
     this.btnAbout = document.getElementById('btn-about') as HTMLButtonElement | null
+    this.btnQuickDiff = document.getElementById('btn-quick-diff')
+    this.hudDiffText = document.getElementById('hud-diff-text')
     this.toastElement = document.getElementById('toast')
 
     this.btnUndo?.addEventListener('click', callbacks.onUndo)
@@ -42,6 +47,7 @@ export class Hud {
     this.btnNewGame?.addEventListener('click', callbacks.onNewGame)
     this.btnSettings?.addEventListener('click', callbacks.onOpenSettings)
     this.btnAbout?.addEventListener('click', () => callbacks.onOpenAbout?.())
+    this.btnQuickDiff?.addEventListener('click', () => callbacks.onCycleDifficulty?.())
   }
 
   updateTurn(player: Player, isAiThinking = false): void {
@@ -127,9 +133,33 @@ export class Hud {
     }, duration)
   }
 
+  updateDifficulty(diff: Difficulty, mode: Mode): void {
+    if (!this.btnQuickDiff || !this.hudDiffText) return
+    if (mode === 'pvp') {
+      this.btnQuickDiff.classList.add('hidden')
+      return
+    }
+    this.btnQuickDiff.classList.remove('hidden')
+    this.btnQuickDiff.title = t('diffSelectorTitle')
+    this.btnQuickDiff.setAttribute('aria-label', t('diffSelectorTitle'))
+    const config: Record<Difficulty, { icon: string; name: string }> = {
+      easy: { icon: '🟢', name: t('diffEasy') },
+      medium: { icon: '🟡', name: t('diffMedium') },
+      hard: { icon: '🔴', name: t('diffHard') }
+    }
+    const item = config[diff] || config.medium
+    this.hudDiffText.textContent = `${item.icon} ${item.name}`
+  }
+
   updateLabels(): void {
     if (this.btnUndo) this.btnUndo.textContent = t('undo')
     if (this.btnPlace) this.btnPlace.textContent = t('place')
     if (this.btnNewGame) this.btnNewGame.textContent = t('newGame')
+    const rulesText = this.btnAbout?.querySelector('.btn-text')
+    if (rulesText) rulesText.textContent = t('rulesButton')
+    if (this.btnAbout) {
+      this.btnAbout.title = t('aboutTitle')
+      this.btnAbout.setAttribute('aria-label', t('aboutTitle'))
+    }
   }
 }

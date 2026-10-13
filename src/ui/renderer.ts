@@ -240,22 +240,24 @@ export class CanvasRenderer {
 
     this.ctx.save()
 
-    // Outer board shadow
-    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)'
-    this.ctx.shadowBlur = 18
-    this.ctx.shadowOffsetY = 8
+    // Outer board shadow: deep natural shadow for tactile 3D wood block look
+    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.65)'
+    this.ctx.shadowBlur = 24
+    this.ctx.shadowOffsetY = 12
 
     // Board plate
     if (theme === 'wood') {
+      // Base Kaya wood gradient
       const grad = this.ctx.createRadialGradient(
         x + size * 0.35, y + size * 0.35, size * 0.1,
-        x + size * 0.5, y + size * 0.5, size * 0.7
+        x + size * 0.5, y + size * 0.5, size * 0.72
       )
-      grad.addColorStop(0, '#e5b275')
-      grad.addColorStop(0.6, '#c98a44')
-      grad.addColorStop(1, '#a66a2c')
+      grad.addColorStop(0, '#ebba7c')
+      grad.addColorStop(0.5, '#ce8d46')
+      grad.addColorStop(0.85, '#a86c2d')
+      grad.addColorStop(1, '#7e4c19')
       this.ctx.fillStyle = grad
-      this.ctx.strokeStyle = '#6e4014'
+      this.ctx.strokeStyle = '#57330f'
     } else {
       // Slate theme
       const grad = this.ctx.createRadialGradient(
@@ -268,11 +270,26 @@ export class CanvasRenderer {
       this.ctx.strokeStyle = '#334155'
     }
 
-    this.ctx.lineWidth = 3
+    this.ctx.lineWidth = 4
     this.roundedRect(x, y, size, size, radius)
     this.ctx.fill()
     this.ctx.shadowColor = 'transparent'
     this.ctx.stroke()
+
+    // Subtle inner chamfer border for traditional Goban craftsmanship
+    if (theme === 'wood') {
+      const inset = 5
+      this.ctx.strokeStyle = 'rgba(255, 230, 180, 0.28)'
+      this.ctx.lineWidth = 1.5
+      this.roundedRect(x + inset, y + inset, size - inset * 2, size - inset * 2, radius - 2)
+      this.ctx.stroke()
+
+      const outerInset = 1.5
+      this.ctx.strokeStyle = 'rgba(40, 20, 5, 0.45)'
+      this.ctx.lineWidth = 1.5
+      this.roundedRect(x + outerInset, y + outerInset, size - outerInset * 2, size - outerInset * 2, radius)
+      this.ctx.stroke()
+    }
 
     this.ctx.restore()
   }

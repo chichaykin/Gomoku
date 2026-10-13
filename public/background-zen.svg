@@ -1,0 +1,255 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+  <defs>
+    <!-- Sky Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0e0b08" />
+      <stop offset="35%" stop-color="#18120c" />
+      <stop offset="65%" stop-color="#2c1e13" />
+      <stop offset="85%" stop-color="#4d321d" />
+      <stop offset="100%" stop-color="#6e4624" />
+    </linearGradient>
+
+    <!-- Sun / Moon Radial Glow -->
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#faecc8" stop-opacity="0.9" />
+      <stop offset="30%" stop-color="#f0cb88" stop-opacity="0.5" />
+      <stop offset="60%" stop-color="#df9a46" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#2c1e13" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Mountain Layer 1 (Furthest) -->
+    <linearGradient id="mount1Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#231a14" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#4a3321" stop-opacity="0.25" />
+    </linearGradient>
+
+    <!-- Mountain Layer 2 -->
+    <linearGradient id="mount2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a140f" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#362417" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Mountain Layer 3 (Closest Peaks) -->
+    <linearGradient id="mount3Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#130e0a" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#24180f" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Terrace Water Reflection Gradient -->
+    <linearGradient id="waterReflect" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#694626" stop-opacity="0.55" />
+      <stop offset="60%" stop-color="#422c19" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#1f150d" stop-opacity="0.7" />
+    </linearGradient>
+
+    <!-- Mist Gradients -->
+    <linearGradient id="mistGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8cca4" stop-opacity="0" />
+      <stop offset="50%" stop-color="#dfbf96" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#16100b" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Terrace Hill Earth Gradient -->
+    <linearGradient id="terraceEarth" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2d2216" />
+      <stop offset="100%" stop-color="#120d09" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. Sky Base -->
+  <rect width="1920" height="1080" fill="url(#skyGrad)" />
+
+  <!-- 2. Distant Morning/Sunset Celestial Orb -->
+  <circle cx="960" cy="460" r="140" fill="url(#sunGlow)" />
+  <circle cx="960" cy="460" r="54" fill="#fff5de" opacity="0.85" />
+
+  <!-- 3. Soaring Crane Silhouettes in Sky -->
+  <g fill="#1a140f" opacity="0.6">
+    <!-- Crane 1 -->
+    <path d="M 1120 340 Q 1128 332 1140 338 Q 1148 333 1156 341 Q 1145 340 1138 344 Z" />
+    <!-- Crane 2 -->
+    <path d="M 1160 325 Q 1166 319 1176 323 Q 1182 320 1188 326 Q 1180 325 1174 328 Z" />
+    <!-- Crane 3 -->
+    <path d="M 1195 348 Q 1200 342 1208 346 Q 1214 343 1219 349 Q 1212 348 1207 351 Z" />
+  </g>
+
+  <!-- 4. Distant Mist Horizon -->
+  <rect x="0" y="380" width="1920" height="240" fill="url(#mistGrad)" />
+
+  <!-- 5. Distant High Mountain Range (Layer 1) -->
+  <path d="M 0 650 
+           L 0 540 
+           Q 120 490 260 520 
+           Q 380 430 520 480 
+           Q 680 360 840 450 
+           Q 960 390 1080 460 
+           Q 1220 370 1380 440 
+           Q 1540 420 1680 490 
+           Q 1800 460 1920 510 
+           L 1920 650 Z" 
+        fill="url(#mount1Grad)" />
+
+  <!-- 6. Mid Mountain Peaks & Slopes (Layer 2) -->
+  <path d="M 0 720 
+           L 0 580 
+           Q 180 500 320 560 
+           Q 460 460 620 530 
+           Q 780 470 910 540 
+           Q 1060 440 1240 520 
+           Q 1410 460 1590 550 
+           Q 1750 490 1920 570 
+           L 1920 720 Z" 
+        fill="url(#mount2Grad)" />
+
+  <!-- Valley Mist Layer -->
+  <ellipse cx="960" cy="580" rx="980" ry="70" fill="url(#mistGrad)" opacity="0.75" />
+
+  <!-- 7. Closer Mountain Slopes (Layer 3) -->
+  <path d="M 0 780 
+           L 0 620 
+           Q 220 580 410 650 
+           Q 580 570 760 660 
+           Q 940 590 1120 670 
+           Q 1330 580 1540 680 
+           Q 1740 620 1920 690 
+           L 1920 780 Z" 
+        fill="url(#mount3Grad)" />
+
+  <!-- 8. Medieval Pagoda / Temple Silhouette on distant ridge -->
+  <g fill="#17110c" opacity="0.8">
+    <rect x="1460" y="525" width="28" height="40" />
+    <path d="M 1445 540 Q 1474 525 1503 540 L 1494 532 Q 1474 520 1454 532 Z" />
+    <path d="M 1449 525 Q 1474 513 1499 525 L 1492 518 Q 1474 509 1456 518 Z" />
+    <path d="M 1454 513 Q 1474 502 1494 513 L 1489 507 Q 1474 499 1459 507 Z" />
+    <line x1="1474" y1="500" x2="1474" y2="486" stroke="#17110c" stroke-width="2" />
+  </g>
+
+  <!-- 9. Cascading Terraced Rice Fields (Рисовые поля - ярусы террас) -->
+  <!-- Terrace Tier 1 (Highest) -->
+  <path d="M 0 710 
+           Q 260 690 540 720 
+           Q 820 705 1100 730 
+           Q 1420 710 1710 740 
+           Q 1840 730 1920 745 
+           L 1920 770 
+           Q 1700 760 1410 745 
+           Q 1100 755 820 735 
+           Q 540 745 260 725 
+           L 0 735 Z" 
+        fill="#3a291a" />
+  <path d="M 0 715 
+           Q 260 695 540 724 
+           Q 820 709 1100 734 
+           Q 1420 714 1710 744 
+           Q 1840 734 1920 748 
+           L 1920 760 
+           Q 1700 750 1410 735 
+           Q 1100 745 820 725 
+           Q 540 735 260 715 
+           L 0 725 Z" 
+        fill="url(#waterReflect)" />
+
+  <!-- Terrace Tier 2 -->
+  <path d="M 0 760 
+           Q 280 735 600 770 
+           Q 920 750 1240 780 
+           Q 1560 755 1920 790 
+           L 1920 825 
+           Q 1540 795 1220 815 
+           Q 900 785 580 810 
+           Q 260 775 0 805 Z" 
+        fill="#322316" />
+  <path d="M 0 766 
+           Q 280 741 600 775 
+           Q 920 755 1240 785 
+           Q 1560 760 1920 795 
+           L 1920 810 
+           Q 1540 785 1220 800 
+           Q 900 775 580 795 
+           Q 260 765 0 790 Z" 
+        fill="url(#waterReflect)" />
+
+  <!-- Terrace Tier 3 -->
+  <path d="M 0 820 
+           Q 320 790 680 830 
+           Q 1040 805 1420 840 
+           Q 1700 820 1920 850 
+           L 1920 890 
+           Q 1680 860 1390 885 
+           Q 1010 850 650 880 
+           Q 300 840 0 875 Z" 
+        fill="#291c11" />
+  <path d="M 0 828 
+           Q 320 798 680 837 
+           Q 1040 812 1420 847 
+           Q 1700 827 1920 856 
+           L 1920 875 
+           Q 1680 848 1390 870 
+           Q 1010 838 650 865 
+           Q 300 828 0 860 Z" 
+        fill="url(#waterReflect)" />
+
+  <!-- Terrace Tier 4 -->
+  <path d="M 0 890 
+           Q 360 855 760 900 
+           Q 1150 870 1560 910 
+           Q 1760 890 1920 920 
+           L 1920 970 
+           Q 1740 940 1520 965 
+           Q 1110 925 720 960 
+           Q 330 915 0 955 Z" 
+        fill="#21160d" />
+  <path d="M 0 900 
+           Q 360 865 760 908 
+           Q 1150 878 1560 918 
+           Q 1760 898 1920 927 
+           L 1920 950 
+           Q 1740 925 1520 948 
+           Q 1110 910 720 940 
+           Q 330 898 0 935 Z" 
+        fill="url(#waterReflect)" />
+
+  <!-- Terrace Tier 5 (Foreground Base) -->
+  <path d="M 0 970 
+           Q 420 930 880 980 
+           Q 1340 940 1920 995 
+           L 1920 1080 
+           L 0 1080 Z" 
+        fill="url(#terraceEarth)" />
+
+  <!-- 10. Foreground Silhouetted Bamboo & Ancient Pine (Borders / Vignette) -->
+  <!-- Left Pine / Bamboo Cluster -->
+  <g fill="#100b07">
+    <!-- Curved Pine Trunk Left -->
+    <path d="M 0 1080 Q 80 960 50 850 Q 30 760 90 690 L 110 695 Q 55 770 70 860 Q 95 970 0 1080 Z" />
+    <!-- Pine Foliage Tufts Left -->
+    <ellipse cx="115" cy="690" rx="60" ry="22" />
+    <ellipse cx="155" cy="710" rx="45" ry="18" />
+    <ellipse cx="80" cy="725" rx="50" ry="20" />
+    <ellipse cx="120" cy="760" rx="55" ry="20" />
+    <ellipse cx="160" cy="780" rx="40" ry="16" />
+    <ellipse cx="60" cy="810" rx="50" ry="18" />
+  </g>
+
+  <!-- Right Bamboo / Foliage Cluster -->
+  <g fill="#0e0a06" opacity="0.95">
+    <!-- Bamboo Stalk 1 -->
+    <path d="M 1900 1080 Q 1880 900 1860 740 L 1866 740 Q 1886 900 1908 1080 Z" />
+    <!-- Bamboo Stalk 2 -->
+    <path d="M 1920 1080 Q 1900 860 1890 680 L 1896 680 Q 1906 860 1926 1080 Z" />
+    <!-- Leaves -->
+    <path d="M 1860 780 Q 1830 790 1810 820 Q 1835 805 1860 785 Z" />
+    <path d="M 1860 775 Q 1825 770 1795 785 Q 1830 775 1860 775 Z" />
+    <path d="M 1890 720 Q 1850 715 1820 730 Q 1855 720 1890 720 Z" />
+    <path d="M 1890 710 Q 1860 690 1840 670 Q 1865 690 1890 712 Z" />
+    <path d="M 1865 850 Q 1830 870 1805 905 Q 1835 885 1865 855 Z" />
+  </g>
+
+  <!-- 11. Subtle Vignette for Board Focus -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="50%">
+    <stop offset="45%" stop-color="#000000" stop-opacity="0" />
+    <stop offset="85%" stop-color="#050302" stop-opacity="0.55" />
+    <stop offset="100%" stop-color="#020101" stop-opacity="0.82" />
+  </radialGradient>
+  <rect width="1920" height="1080" fill="url(#vignette)" />
+</svg>

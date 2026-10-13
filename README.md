@@ -24,22 +24,26 @@ Runs directly in modern desktop and mobile browsers, or installs to Android and 
 - **Game Modes & AI Engine:**
   - **Single Player vs AI:** Choose to play as Black (moves first) or White (moves second).
   - **Two Players (Pass & Play):** Play locally on the same device.
+  - **Quick Difficulty Selector:** One-click toggle chip directly in the top HUD.
   - **3 AI Difficulty Levels:**
-    - **Easy:** Casual play with threat awareness.
-    - **Medium:** Heuristic pattern evaluation matrix (evaluating open/closed threes and fours, double forks).
-    - **Hard:** Multi-ply Minimax search with Alpha-Beta pruning, candidate move pruning, and iterative deepening.
+    - **Easy (Apprentice / Ученик):** Relaxed casual play, allowing beginners to easily form winning five-in-a-row combinations.
+    - **Medium (Master / Мастер):** Heuristic pattern evaluation matrix (evaluating open/closed threes and fours, double forks).
+    - **Hard (Sensei / Сенсей):** Multi-ply Minimax search with Alpha-Beta pruning, candidate move pruning, and iterative deepening.
   - **Background Web Worker (`ai.worker.ts`):** Heavy calculations run off the main thread, keeping animations and touch interactions smooth at 60+ FPS.
 
-- **Mobile Touch-First UX:**
+- **Mobile Touch-First UX & Accessibility:**
   - Multi-touch **Pinch-to-zoom** (1× to 3×) and smooth **Pan / Drag** across the board.
   - **Ghost stone preview** with confirmation (tap once to inspect, tap again or press "Place" to confirm) to eliminate fat-finger misclicks on small phone screens.
+  - Prominent **Rules & History Scroll button (`📜`)** accessible directly from the main header.
+  - **Inspect Board mode (`👁️`)** on game over: temporarily hides the victory scroll to examine the board with a floating results return button.
   - Toggleable **"One-tap move"** mode in Settings for tablets and desktop mouse users.
   - Double-tap on board margins to reset zoom.
 
 - **Visual Themes & Audio:**
-  - **Wood Goban:** Natural warm wood texture with realistic 3D stones, highlights, and soft drop shadows.
-  - **Dark Slate:** Modern dark neo-minimalist theme with contrasting stones and a vibrant glowing winning line.
-  - **Procedural Web Audio API:** Realistic stone clicks, winning fanfare, and lose chime synthesized dynamically in real time without external MP3 files.
+  - **Medieval Zen Landscape:** Panoramic terraced rice paddies and misty mountains in classical Sumi-e ink-wash style (`background-zen.svg`).
+  - **Kaya Wood Goban:** Authentic Japanese Kaya table with warm gradient, double-bevel craftsmanship, and realistic Nachiguro slate / Hamaguri shell stones.
+  - **Imperial Victory Scroll:** Ceremonial scroll modal with wax seal (`勝`), match statistics (timer, turns, opponent rank), and zen accolades.
+  - **Procedural Web Audio API:** Resonant bronze temple gong and pentatonic Koto harp arpeggio synthesized dynamically without external MP3 files.
   - **Haptic Vibration API:** Subtle tactile feedback on moves and victories (on supported devices).
 
 - **Localization (i18n):**

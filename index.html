@@ -23,17 +23,26 @@
             <span id="turn-dot" class="turn-dot player-black"></span>
             <span id="turn-text" class="turn-text" data-i18n="turnBlack">Black to move</span>
           </div>
+          <button id="btn-quick-diff" class="hud-badge hud-diff-badge" title="Difficulty" aria-label="Difficulty">
+            <span id="hud-diff-text">🟢 Easy</span>
+          </button>
         </div>
         <div class="hud-right">
           <span id="move-counter" class="hud-badge">Move 1</span>
           <span id="game-timer" class="hud-badge">00:00</span>
-          <button id="btn-about" class="btn btn-icon hud-btn-info" title="About & History" aria-label="About & History">ℹ️</button>
+          <button id="btn-about" class="btn btn-rules-scroll" title="Rules & History" aria-label="Rules & History">
+            <span class="btn-scroll-icon">📜</span>
+            <span class="btn-text" data-i18n="rulesButton">Rules</span>
+          </button>
         </div>
       </header>
 
       <!-- Center Board Area -->
       <main id="board-container" class="board-container">
         <canvas id="board-canvas"></canvas>
+        <button id="btn-inspect-return" class="btn btn-inspect-return hidden" title="Results">
+          🏆 <span data-i18n="returnToMenu">Results</span>
+        </button>
       </main>
 
       <!-- Bottom HUD Bar -->

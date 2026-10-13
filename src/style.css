@@ -1,26 +1,28 @@
 :root {
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family: 'Cinzel', 'Noto Serif', 'Songti SC', 'STSong', Georgia, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  /* Theme: Wood (Default) */
-  --bg-primary: #1a1612;
-  --bg-hud: rgba(28, 23, 18, 0.92);
-  --text-main: #f5ede4;
-  --text-muted: #a39485;
-  --border-color: #3d3228;
-  --btn-sec-bg: #2d241c;
-  --btn-sec-hover: #3e3226;
-  --btn-pri-bg: #c98a44;
-  --btn-pri-hover: #dfaa6c;
-  --btn-pri-text: #1b1206;
+  /* Theme: Wood (Default) - Medieval Oriental Zen */
+  --bg-primary: #120e0a;
+  --bg-hud: rgba(22, 17, 13, 0.90);
+  --text-main: #fcf5eb;
+  --text-muted: #c4b09b;
+  --border-color: #4a3827;
+  --btn-sec-bg: #291e14;
+  --btn-sec-hover: #3d2d1e;
+  --btn-pri-bg: #9e2a2b;
+  --btn-pri-hover: #b83637;
+  --btn-pri-text: #fff6eb;
+  --gold-accent: #d4af37;
+  --gold-border: rgba(212, 175, 55, 0.45);
   --board-bg: #c98a44;
   --board-grid: #5c3814;
   --stone-black: #111111;
   --stone-white: #eeeeee;
-  --win-line: #22c55e;
+  --win-line: #f59e0b;
 }
 
 .theme-slate {
@@ -69,6 +71,10 @@ html, body {
   transition: background-color 0.25s ease;
 }
 
+.app-container.theme-wood {
+  background: #120e0a url('/background-zen.svg') no-repeat center center / cover;
+}
+
 /* Header & HUD Top */
 .hud-top {
   display: flex;
@@ -76,6 +82,8 @@ html, body {
   align-items: center;
   padding: max(10px, var(--safe-top)) max(16px, var(--safe-right)) 10px max(16px, var(--safe-left));
   background-color: var(--bg-hud);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-color);
   z-index: 10;
   min-height: 52px;
@@ -84,7 +92,7 @@ html, body {
 .hud-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .turn-indicator {
@@ -93,6 +101,7 @@ html, body {
   gap: 8px;
   font-size: 0.95rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .turn-dot {
@@ -124,10 +133,66 @@ html, body {
   font-weight: 500;
   color: var(--text-muted);
   background-color: var(--btn-sec-bg);
-  padding: 4px 8px;
+  padding: 5px 9px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
   font-variant-numeric: tabular-nums;
+}
+
+/* Quick Difficulty Selector Badge in HUD */
+.hud-diff-badge {
+  cursor: pointer;
+  background-color: var(--btn-sec-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.hud-diff-badge:hover {
+  border-color: #d4af37;
+  background-color: #3b2a1a;
+  transform: translateY(-1px);
+}
+
+.hud-diff-badge:active {
+  transform: scale(0.96);
+}
+
+/* Medieval Rules / Scroll Button */
+.btn-rules-scroll {
+  background: linear-gradient(135deg, #3d2c1d 0%, #291d13 100%);
+  border: 1px solid var(--gold-border);
+  color: #faecd5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 175, 55, 0.25);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  min-height: 36px;
+}
+
+.btn-rules-scroll:hover {
+  background: linear-gradient(135deg, #4f3925 0%, #352618 100%);
+  border-color: #d4af37;
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-rules-scroll:active {
+  transform: scale(0.96);
 }
 
 /* Board Canvas Area */
@@ -139,6 +204,10 @@ html, body {
   align-items: center;
   overflow: hidden;
   background-color: var(--bg-primary);
+}
+
+.theme-wood .board-container {
+  background: transparent;
 }
 
 #board-canvas {
@@ -389,6 +458,155 @@ html, body {
   color: var(--text-main);
 }
 
+/* Medieval Victory Scroll Modal */
+.medieval-scroll-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 4px;
+  gap: 12px;
+}
+
+.seal-container {
+  margin-bottom: 2px;
+}
+
+.imperial-seal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px double #d4af37;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.4);
+  margin: 0 auto;
+}
+
+.seal-win {
+  background: radial-gradient(circle, #b72727 0%, #7d1313 100%);
+  color: #fff2d1;
+}
+
+.seal-lose {
+  background: radial-gradient(circle, #443c3a 0%, #201b1b 100%);
+  color: #d1c5c5;
+}
+
+.seal-draw {
+  background: radial-gradient(circle, #b8860b 0%, #704f05 100%);
+  color: #fff9e6;
+}
+
+.seal-char {
+  font-size: 2rem;
+  font-family: 'Songti SC', 'STSong', serif;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.scroll-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #f7e6c4;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-subtitle {
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #c4b09b;
+  line-height: 1.45;
+  max-width: 340px;
+}
+
+.scroll-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.scroll-stat-item {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.74rem;
+  color: #a3907c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fcf4eb;
+}
+
+.scroll-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #a83232 0%, #7f1d1d 100%);
+  border: 1px solid #d4af37;
+  color: #fff9e6;
+  box-shadow: 0 3px 12px rgba(168, 50, 50, 0.4);
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #be3e3e 0%, #942525 100%);
+  border-color: #fce184;
+}
+
+/* Floating Inspect Board Return Pill */
+.btn-inspect-return {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  background: rgba(22, 17, 13, 0.94);
+  border: 1.5px solid #d4af37;
+  color: #faecd5;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  animation: pulseGlow 2.5s infinite ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.7);
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -426,6 +644,11 @@ html, body {
   .hud-badge {
     width: 100%;
     text-align: center;
+  }
+  .hud-top .btn-rules-scroll,
+  .hud-left .hud-diff-badge {
+    width: 100%;
+    justify-content: center;
   }
   .hud-bottom {
     border-top: none;
