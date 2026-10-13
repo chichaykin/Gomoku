@@ -23,6 +23,7 @@ export class Hud {
   private btnQuickDiff: HTMLElement | null
   private hudDiffText: HTMLElement | null
   private toastElement: HTMLElement | null
+  private toastTimerId: number | null = null
 
   private timerInterval: number | null = null
   private startTime = 0
@@ -119,15 +120,20 @@ export class Hud {
 
   showToast(message: string, duration = 2000): void {
     if (!this.toastElement) return
+    if (this.toastTimerId !== null) {
+      window.clearTimeout(this.toastTimerId)
+      this.toastTimerId = null
+    }
     this.toastElement.textContent = message
     this.toastElement.classList.remove('hidden')
     this.toastElement.style.opacity = '1'
 
-    setTimeout(() => {
+    this.toastTimerId = window.setTimeout(() => {
       if (this.toastElement) {
         this.toastElement.style.opacity = '0'
-        setTimeout(() => {
+        this.toastTimerId = window.setTimeout(() => {
           this.toastElement?.classList.add('hidden')
+          this.toastTimerId = null
         }, 200)
       }
     }, duration)

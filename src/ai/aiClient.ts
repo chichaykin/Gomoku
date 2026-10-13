@@ -10,6 +10,9 @@ export class AiClient {
   private worker: Worker | null = null
   private latestRequestId = 0
   private isThinking = false
+  private currentCallback: AiMoveCallback | null = null
+  private currentStartTime = 0
+  private readonly minDelayMs = 350
 
   constructor() {
     this.initWorker()
@@ -21,11 +24,39 @@ export class AiClient {
         this.worker = new Worker(new URL('./ai.worker.ts', import.meta.url), {
           type: 'module'
         })
+        this.worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+          this.handleWorkerResponse(e.data)
+        }
+        this.worker.onerror = (err) => {
+          console.warn('AI Web Worker encountered an error, resetting thinking state', err)
+          this.isThinking = false
+          this.currentCallback = null
+        }
       } catch (err) {
         console.warn('Failed to initialize AI Web Worker, falling back to sync', err)
         this.worker = null
       }
     }
+  }
+
+  private handleWorkerResponse(response: WorkerResponse): void {
+    if (response.id !== this.latestRequestId || !this.currentCallback) {
+      // Stale response from canceled/superseded turn, ignore
+      return
+    }
+
+    const callback = this.currentCallback
+    const requestId = this.latestRequestId
+    const elapsed = performance.now() - this.currentStartTime
+    const remainingDelay = Math.max(0, this.minDelayMs - elapsed)
+
+    setTimeout(() => {
+      if (requestId === this.latestRequestId) {
+        this.isThinking = false
+        this.currentCallback = null
+        callback({ x: response.x, y: response.y })
+      }
+    }, remainingDelay)
   }
 
   getIsThinking(): boolean {
@@ -35,6 +66,7 @@ export class AiClient {
   cancelCurrentThinking(): void {
     this.latestRequestId++
     this.isThinking = false
+    this.currentCallback = null
   }
 
   requestMove(
@@ -47,47 +79,26 @@ export class AiClient {
     this.latestRequestId++
     const requestId = this.latestRequestId
     this.isThinking = true
-    const startTime = performance.now()
-    const minDelayMs = 350
+    this.currentCallback = onMove
+    this.currentStartTime = performance.now()
 
     if (!this.worker) {
       // Synchronous fallback
       import('./search').then(({ findBestMove }) => {
         if (requestId !== this.latestRequestId) return
         const res = findBestMove(board, aiPlayer, difficulty, timeLimitMs)
-        const elapsed = performance.now() - startTime
-        const remainingDelay = Math.max(0, minDelayMs - elapsed)
+        const elapsed = performance.now() - this.currentStartTime
+        const remainingDelay = Math.max(0, this.minDelayMs - elapsed)
         setTimeout(() => {
           if (requestId === this.latestRequestId) {
             this.isThinking = false
+            this.currentCallback = null
             onMove({ x: res.x, y: res.y })
           }
         }, remainingDelay)
       })
       return
     }
-
-    const onMessage = (e: MessageEvent<WorkerResponse>) => {
-      const response = e.data
-      if (response.id !== requestId) {
-        // Stale response from canceled/superseded turn, ignore
-        return
-      }
-
-      this.worker?.removeEventListener('message', onMessage)
-
-      const elapsed = performance.now() - startTime
-      const remainingDelay = Math.max(0, minDelayMs - elapsed)
-
-      setTimeout(() => {
-        if (requestId === this.latestRequestId) {
-          this.isThinking = false
-          onMove({ x: response.x, y: response.y })
-        }
-      }, remainingDelay)
-    }
-
-    this.worker.addEventListener('message', onMessage)
 
     const request: WorkerRequest = {
       id: requestId,

@@ -272,7 +272,7 @@ export class ModalManager {
     })
 
     document.getElementById('btn-show-feedback')?.addEventListener('click', () => {
-      this.showFeedback(settings)
+      this.showFeedback(settings, 'settings')
     })
 
     document.getElementById('btn-modal-install')?.addEventListener('click', () => {
@@ -572,7 +572,7 @@ export class ModalManager {
     document.getElementById('modal-about-close-btn')?.addEventListener('click', () => this.close())
 
     document.getElementById('btn-about-feedback')?.addEventListener('click', () => {
-      this.showFeedback(s)
+      this.showFeedback(s, 'about')
     })
 
     document.getElementById('btn-about-lang-en')?.addEventListener('click', () => {
@@ -600,14 +600,17 @@ export class ModalManager {
     this.overlay.classList.remove('hidden')
   }
 
-  showFeedback(settings?: Settings): void {
+  showFeedback(settings?: Settings, returnTo: 'about' | 'settings' | 'none' = 'none'): void {
     if (!this.overlay || !this.card) return
 
     const s = settings || this.callbacks.getSettings?.()
 
     this.card.innerHTML = `
       <div class="modal-header">
-        <h2 class="modal-title">💬 ${t('feedbackTitle')}</h2>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${returnTo !== 'none' ? `<button id="modal-feedback-back" class="btn btn-icon" aria-label="${t('back')}" title="${t('back')}">←</button>` : ''}
+          <h2 class="modal-title">💬 ${t('feedbackTitle')}</h2>
+        </div>
         <button id="modal-close-btn" class="btn btn-icon" aria-label="${t('close')}">✕</button>
       </div>
       <div class="modal-body feedback-body">
@@ -650,8 +653,9 @@ export class ModalManager {
           </button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button id="modal-feedback-close" class="btn btn-secondary">${t('close')}</button>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px;">
+        ${returnTo !== 'none' ? `<button id="modal-feedback-back-btn" class="btn btn-secondary">← ${t('back')}</button>` : ''}
+        <button id="modal-feedback-close" class="btn btn-primary">${t('close')}</button>
       </div>
     `
 
@@ -667,15 +671,21 @@ export class ModalManager {
       return { message, contact, type, messageInput }
     }
 
-    document.getElementById('modal-close-btn')?.addEventListener('click', () => {
-      if (s) this.showAbout(s)
-      else this.close()
-    })
+    const handleBack = () => {
+      if (returnTo === 'about' && s) {
+        this.showAbout(s)
+      } else if (returnTo === 'settings' && s) {
+        this.showSettings(s, this.callbacks.onSettingsChanged)
+      } else {
+        this.close()
+      }
+    }
 
-    document.getElementById('modal-feedback-close')?.addEventListener('click', () => {
-      if (s) this.showAbout(s)
-      else this.close()
-    })
+    document.getElementById('modal-feedback-back')?.addEventListener('click', handleBack)
+    document.getElementById('modal-feedback-back-btn')?.addEventListener('click', handleBack)
+
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
+    document.getElementById('modal-feedback-close')?.addEventListener('click', () => this.close())
 
     document.getElementById('btn-send-github')?.addEventListener('click', () => {
       const { message, contact, type, messageInput } = getFormData()
@@ -725,15 +735,43 @@ export class ModalManager {
       }
 
       const formatted = `[Gomoku Feedback]\nCategory: ${type}\nContact: ${contact}\nMessage:\n${message}`
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(formatted).then(() => {
-          this.callbacks.onToast?.(t('feedbackCopied'))
-        }).catch(() => {
-          this.callbacks.onToast?.(t('feedbackCopied'))
-        })
-      }
+      this.copyToClipboard(formatted)
     })
 
     this.overlay.classList.remove('hidden')
+  }
+
+  private copyToClipboard(text: string): void {
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.callbacks.onToast?.(t('feedbackCopied'))
+      }).catch(() => {
+        this.fallbackCopyText(text)
+      })
+    } else {
+      this.fallbackCopyText(text)
+    }
+  }
+
+  private fallbackCopyText(text: string): void {
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.top = '-9999px'
+      textArea.style.left = '-9999px'
+      textArea.setAttribute('readonly', '')
+      document.body.appendChild(textArea)
+      textArea.select()
+      const successful = document.execCommand('copy')
+      document.body.removeChild(textArea)
+      if (successful) {
+        this.callbacks.onToast?.(t('feedbackCopied'))
+      } else {
+        this.callbacks.onToast?.(t('feedbackCopyFailed'))
+      }
+    } catch {
+      this.callbacks.onToast?.(t('feedbackCopyFailed'))
+    }
   }
 }

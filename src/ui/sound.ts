@@ -6,8 +6,10 @@ export class SoundService {
     if (!this.enabled) return null
     if (!this.ctx && typeof AudioContext !== 'undefined') {
       try {
-        const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-        this.ctx = new AudioCtxClass()
+        const AudioCtxClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+        if (AudioCtxClass) {
+          this.ctx = new AudioCtxClass()
+        }
       } catch {
         this.ctx = null
       }
@@ -22,10 +24,12 @@ export class SoundService {
     if (typeof AudioContext !== 'undefined') {
       try {
         if (!this.ctx) {
-          const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-          this.ctx = new AudioCtxClass()
+          const AudioCtxClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+          if (AudioCtxClass) {
+            this.ctx = new AudioCtxClass()
+          }
         }
-        if (this.ctx.state === 'suspended') {
+        if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume().catch(() => {})
         }
       } catch {

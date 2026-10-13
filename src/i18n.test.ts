@@ -45,4 +45,16 @@ describe('i18n module', () => {
     expect(t('historyP1')).toContain('Китае')
     expect(t('historyP2')).toContain('Японию')
   })
+
+  it('provides feedback and navigation strings in selected language', () => {
+    setLang('en')
+    expect(t('feedbackButton')).toBe('Feedback')
+    expect(t('back')).toBe('Back')
+    expect(t('feedbackViaGithub')).toContain('GitHub')
+
+    setLang('ru')
+    expect(t('feedbackButton')).toBe('Обратная связь')
+    expect(t('back')).toBe('Назад')
+    expect(t('feedbackViaGithub')).toContain('GitHub')
+  })
 })

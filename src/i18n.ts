@@ -94,8 +94,10 @@ export const enDict = {
   feedbackViaEmail: 'Send via Email',
   feedbackCopy: 'Copy message',
   feedbackCopied: 'Message copied to clipboard!',
+  feedbackCopyFailed: 'Could not copy to clipboard',
   feedbackEmptyWarning: 'Please write a message before sending.',
-  feedbackSent: 'Thank you for your feedback!'
+  feedbackSent: 'Thank you for your feedback!',
+  back: 'Back'
 } as const
 
 export type Key = keyof typeof enDict
@@ -194,8 +196,10 @@ export const ruDict: Record<Key, string> = {
   feedbackViaEmail: 'Отправить по Email',
   feedbackCopy: 'Скопировать текст',
   feedbackCopied: 'Текст отзыва скопирован в буфер обмена!',
+  feedbackCopyFailed: 'Не удалось скопировать в буфер обмена',
   feedbackEmptyWarning: 'Пожалуйста, напишите текст сообщения перед отправкой.',
-  feedbackSent: 'Спасибо за ваш отзыв!'
+  feedbackSent: 'Спасибо за ваш отзыв!',
+  back: 'Назад'
 }
 
 let currentLang: Lang = (() => {
