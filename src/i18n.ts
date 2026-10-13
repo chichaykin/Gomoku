@@ -74,7 +74,11 @@ export const enDict = {
   time: 'Time',
   turns: 'Turns',
   opponent: 'Opponent',
-  newBattle: 'New Battle'
+  newBattle: 'New Battle',
+  authorTitle: 'Author & GitHub',
+  authorDesc: 'Created with precision and passion by Mikhail Chichaykin. Pure vanilla TypeScript, HTML5 Canvas 2D, and procedural Web Audio with zero runtime dependencies.',
+  authorGithub: 'GitHub Profile',
+  authorRepo: 'Repository'
 } as const
 
 export type Key = keyof typeof enDict
@@ -153,7 +157,11 @@ export const ruDict: Record<Key, string> = {
   time: 'Время',
   turns: 'Ходов',
   opponent: 'Соперник',
-  newBattle: 'Новая битва'
+  newBattle: 'Новая битва',
+  authorTitle: 'Автор и GitHub',
+  authorDesc: 'Разработано Михаилом Чичайкиным. Чистый TypeScript, HTML5 Canvas 2D и процедурный синтез Web Audio без внешних библиотек и зависимостей.',
+  authorGithub: 'Профиль GitHub',
+  authorRepo: 'Репозиторий проекта'
 }
 
 let currentLang: Lang = (() => {

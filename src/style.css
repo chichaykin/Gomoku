@@ -458,6 +458,36 @@ html, body {
   color: var(--text-main);
 }
 
+.about-author-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.about-author-link {
+  text-decoration: none;
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  flex: 1 1 180px;
+  background-color: var(--btn-sec-bg);
+  border: 1px solid var(--border-color);
+  transition: all 0.15s ease;
+}
+
+.about-author-link:hover {
+  background-color: var(--btn-sec-hover);
+  border-color: var(--gold-border, #d4af37);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 /* Medieval Victory Scroll Modal */
 .medieval-scroll-content {
   display: flex;
