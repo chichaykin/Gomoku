@@ -1,5 +1,7 @@
 # Gomoku — Five in a Row (PWA)
 
+🎮 **Play Live Online:** [https://chichaykin.github.io/Gomoku/](https://chichaykin.github.io/Gomoku/)
+
 A high-performance Progressive Web App (PWA) for the classic logic board game **Gomoku** («Пять в ряд»).
 Runs directly in modern desktop and mobile browsers, or installs to Android and iOS home screens as a native standalone application with 100% offline support.
 
