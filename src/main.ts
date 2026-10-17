@@ -15,6 +15,7 @@ import {
 import { AiClient } from './ai/aiClient'
 import { Game } from './core/game'
 import { Difficulty, Player, Settings, WHITE } from './core/types'
+import { cleanLangParamFromUrl, parseLangFromSearch, refreshGamesCatalog } from './gamesCatalog'
 import { applyI18n, onLangChange, setLang, t } from './i18n'
 import { StorageService } from './storage'
 import { HapticsService } from './ui/haptics'
@@ -48,6 +49,20 @@ const aiClient = new AiClient()
 
 // Load persisted settings
 let settings: Settings = storage.loadSettings()
+
+// Honor incoming ?lang=ru|en query parameter for seamless cross-game switching
+if (typeof window !== 'undefined') {
+  const urlLang = parseLangFromSearch(window.location.search)
+  if (urlLang) {
+    if (urlLang !== settings.lang) {
+      settings.lang = urlLang
+      storage.saveSettings(settings)
+    }
+    cleanLangParamFromUrl()
+  }
+  void refreshGamesCatalog()
+}
+
 sound.enabled = settings.sound
 haptics.enabled = settings.haptics
 setLang(settings.lang)
@@ -83,6 +98,12 @@ const hud = new Hud({
   onNewGame: () => handleNewGameRequest(),
   onOpenSettings: () => modals.showSettings(settings, onSettingsChanged),
   onOpenAbout: () => modals.showAbout(settings),
+  onOpenGames: () => {
+    if (game.state.status === 'playing' && game.state.moves.length > 0) {
+      saveCurrentGame()
+    }
+    modals.showGames(settings)
+  },
   onCycleDifficulty: () => handleCycleDifficulty()
 })
 

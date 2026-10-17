@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-17",
+  "games": [
+    {
+      "id": "gomoku",
+      "url": "https://chichaykin.github.io/Gomoku/",
+      "repo": "https://github.com/chichaykin/Gomoku",
+      "icon": "⚫",
+      "accent": "#d4af37",
+      "title": {
+        "en": "Gomoku — Five in a Row",
+        "ru": "Гомоку — Пять в ряд"
+      },
+      "shortTitle": {
+        "en": "Gomoku",
+        "ru": "Гомоку"
+      },
+      "description": {
+        "en": "Ancient strategy board game: align 5 stones in a row against AI or a friend.",
+        "ru": "Древняя логическая стратегия: выстройте 5 камней в ряд против ИИ или друга."
+      },
+      "tags": {
+        "en": ["Strategy", "15×15 / 19×19", "AI & 2P"],
+        "ru": ["Стратегия", "15×15 / 19×19", "ИИ и 2 игрока"]
+      }
+    },
+    {
+      "id": "logika",
+      "url": "https://chichaykin.github.io/Logika/",
+      "repo": "https://github.com/chichaykin/Logika",
+      "icon": "🔮",
+      "accent": "#e6be47",
+      "title": {
+        "en": "Logika — Mastermind",
+        "ru": "Логика — Mastermind"
+      },
+      "shortTitle": {
+        "en": "Logika",
+        "ru": "Логика"
+      },
+      "description": {
+        "en": "Crack the secret code of colored marbles or challenge Donald Knuth’s 5-guess AI.",
+        "ru": "Разгадайте секретный код из цветных шариков или сразитесь с алгоритмом Кнута."
+      },
+      "tags": {
+        "en": ["Deduction", "Knuth AI", "Codebreaker"],
+        "ru": ["Дедукция", "ИИ Кнута", "Код-брейкер"]
+      }
+    }
+  ]
+}

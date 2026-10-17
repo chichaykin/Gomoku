@@ -99,7 +99,13 @@ export const enDict = {
   feedbackSent: 'Thank you for your feedback!',
   back: 'Back',
   settingsAnalytics: 'Anonymous analytics',
-  settingsAnalyticsDesc: 'Helps improve the game (no personal data)'
+  settingsAnalyticsDesc: 'Helps improve the game (no personal data)',
+  otherGamesButton: 'Games',
+  otherGamesTitle: 'Our Logic Games',
+  otherGamesSubtitle: 'Switch between games anytime — your current match is saved automatically.',
+  currentGameBadge: 'Playing now',
+  playGameButton: 'Play',
+  gameSavedHint: 'Offline-ready PWA collection by Mikhail Chichaykin'
 } as const
 
 export type Key = keyof typeof enDict
@@ -203,7 +209,13 @@ export const ruDict: Record<Key, string> = {
   feedbackSent: 'Спасибо за ваш отзыв!',
   back: 'Назад',
   settingsAnalytics: 'Анонимная аналитика',
-  settingsAnalyticsDesc: 'Помогает улучшать игру (без персональных данных)'
+  settingsAnalyticsDesc: 'Помогает улучшать игру (без персональных данных)',
+  otherGamesButton: 'Игры',
+  otherGamesTitle: 'Наши логические игры',
+  otherGamesSubtitle: 'Переключайтесь между играми в любой момент — текущая партия сохраняется автоматически.',
+  currentGameBadge: 'Вы здесь',
+  playGameButton: 'Играть',
+  gameSavedHint: 'Коллекция офлайн PWA-игр Михаила Чичайкина'
 }
 
 let currentLang: Lang = (() => {

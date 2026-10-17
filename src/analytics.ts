@@ -313,7 +313,7 @@ export function trackGameEnd(params: {
 /**
  * Track modal screen view.
  */
-export function trackModalView(modalName: 'settings' | 'stats' | 'about' | 'feedback' | 'ios_install'): void {
+export function trackModalView(modalName: 'settings' | 'stats' | 'about' | 'feedback' | 'ios_install' | 'games'): void {
   if (!isAnalyticsAllowed()) return
   safeGtag('event', 'modal_view', { modal_name: modalName })
 }

@@ -7,6 +7,7 @@ export interface HudCallbacks {
   onNewGame: () => void
   onOpenSettings: () => void
   onOpenAbout?: () => void
+  onOpenGames?: () => void
   onCycleDifficulty?: () => void
 }
 
@@ -20,6 +21,7 @@ export class Hud {
   private btnNewGame: HTMLButtonElement | null
   private btnSettings: HTMLButtonElement | null
   private btnAbout: HTMLButtonElement | null
+  private btnGames: HTMLButtonElement | null
   private btnQuickDiff: HTMLElement | null
   private hudDiffText: HTMLElement | null
   private toastElement: HTMLElement | null
@@ -39,6 +41,7 @@ export class Hud {
     this.btnNewGame = document.getElementById('btn-new-game') as HTMLButtonElement | null
     this.btnSettings = document.getElementById('btn-settings') as HTMLButtonElement | null
     this.btnAbout = document.getElementById('btn-about') as HTMLButtonElement | null
+    this.btnGames = document.getElementById('btn-games') as HTMLButtonElement | null
     this.btnQuickDiff = document.getElementById('btn-quick-diff')
     this.hudDiffText = document.getElementById('hud-diff-text')
     this.toastElement = document.getElementById('toast')
@@ -48,6 +51,7 @@ export class Hud {
     this.btnNewGame?.addEventListener('click', callbacks.onNewGame)
     this.btnSettings?.addEventListener('click', callbacks.onOpenSettings)
     this.btnAbout?.addEventListener('click', () => callbacks.onOpenAbout?.())
+    this.btnGames?.addEventListener('click', () => callbacks.onOpenGames?.())
     this.btnQuickDiff?.addEventListener('click', () => callbacks.onCycleDifficulty?.())
   }
 
@@ -166,6 +170,12 @@ export class Hud {
     if (this.btnAbout) {
       this.btnAbout.title = t('aboutTitle')
       this.btnAbout.setAttribute('aria-label', t('aboutTitle'))
+    }
+    const gamesText = this.btnGames?.querySelector('.btn-text')
+    if (gamesText) gamesText.textContent = t('otherGamesButton')
+    if (this.btnGames) {
+      this.btnGames.title = t('otherGamesTitle')
+      this.btnGames.setAttribute('aria-label', t('otherGamesTitle'))
     }
   }
 }

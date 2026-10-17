@@ -1,5 +1,13 @@
 import { trackFeedbackAction, trackModalView } from '../analytics'
 import { BoardSize, Difficulty, Mode, Player, Settings, Theme } from '../core/types'
+import {
+  buildGameUrl,
+  CURRENT_GAME_ID,
+  escapeHtml,
+  GameEntry,
+  getGamesCatalog,
+  refreshGamesCatalog
+} from '../gamesCatalog'
 import { getLang, setLang, t } from '../i18n'
 import { StatsRecord } from '../storage'
 
@@ -215,6 +223,7 @@ export class ModalManager {
 
         <!-- Extra action buttons -->
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+          <button id="btn-show-games" class="btn btn-secondary" style="flex: 1 1 45%;">🎮 ${t('otherGamesTitle')}</button>
           <button id="btn-show-about" class="btn btn-secondary" style="flex: 1 1 45%;">📖 ${t('aboutGame')}</button>
           <button id="btn-show-stats" class="btn btn-secondary" style="flex: 1 1 45%;">📊 ${t('stats')}</button>
           <button id="btn-show-feedback" class="btn btn-secondary" style="flex: 1 1 45%;">💬 ${t('feedbackButton')}</button>
@@ -301,6 +310,10 @@ export class ModalManager {
     analyticsCheck?.addEventListener('change', () => {
       settings.analytics = analyticsCheck.checked
       onSettingsChanged({ ...settings })
+    })
+
+    document.getElementById('btn-show-games')?.addEventListener('click', () => {
+      this.showGames(settings, 'settings')
     })
 
     document.getElementById('btn-show-about')?.addEventListener('click', () => {
@@ -600,6 +613,9 @@ export class ModalManager {
             <a href="https://github.com/chichaykin/Gomoku" target="_blank" rel="noopener noreferrer" class="btn btn-secondary about-author-link">
               <span>⭐ ${t('authorRepo')}</span>
             </a>
+            <button id="btn-about-games" class="btn btn-secondary about-author-link" style="cursor: pointer;">
+              <span>🎮 ${t('otherGamesTitle')}</span>
+            </button>
             <button id="btn-about-feedback" class="btn btn-primary about-author-link" style="cursor: pointer;">
               <span>💬 ${t('feedbackButton')}</span>
             </button>
@@ -613,6 +629,10 @@ export class ModalManager {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
     document.getElementById('modal-about-close-btn')?.addEventListener('click', () => this.close())
+
+    document.getElementById('btn-about-games')?.addEventListener('click', () => {
+      this.showGames(s, 'about')
+    })
 
     document.getElementById('btn-about-feedback')?.addEventListener('click', () => {
       this.showFeedback(s, 'about')
@@ -642,6 +662,118 @@ export class ModalManager {
 
     this.open()
     trackModalView('about')
+  }
+
+  showGames(settings?: Settings, returnTo: 'about' | 'settings' | 'none' = 'none'): void {
+    if (!this.overlay || !this.card) return
+
+    const s = settings || this.callbacks.getSettings?.()
+    const currentLang = getLang()
+
+    const renderCatalogCards = (games: GameEntry[]): string => {
+      return games
+        .map((game) => {
+          const isCurrent = game.id === CURRENT_GAME_ID
+          const title = escapeHtml(game.title[currentLang] || game.title.en)
+          const desc = escapeHtml(game.description[currentLang] || game.description.en)
+          const icon = escapeHtml(game.icon)
+          const safeId = escapeHtml(game.id)
+          const tags = Array.isArray(game.tags?.[currentLang])
+            ? game.tags[currentLang]
+            : Array.isArray(game.tags?.en)
+              ? game.tags.en
+              : []
+          const targetHref = escapeHtml(buildGameUrl(game.url, currentLang))
+
+          const tagsHtml = tags
+            .map((tag) => `<span class="game-catalog-tag">${escapeHtml(String(tag))}</span>`)
+            .join('')
+
+          if (isCurrent) {
+            return `
+              <div class="game-catalog-card game-catalog-card-current">
+                <div class="game-catalog-card-top">
+                  <span class="game-catalog-icon" aria-hidden="true">${icon}</span>
+                  <div class="game-catalog-info">
+                    <div class="game-catalog-title-row">
+                      <span class="game-catalog-title">${title}</span>
+                      <span class="game-catalog-badge">${t('currentGameBadge')}</span>
+                    </div>
+                    <p class="game-catalog-desc">${desc}</p>
+                    <div class="game-catalog-tags">${tagsHtml}</div>
+                  </div>
+                </div>
+              </div>
+            `
+          }
+
+          return `
+            <a href="${targetHref}" class="game-catalog-card game-catalog-card-link" data-game-id="${safeId}">
+              <div class="game-catalog-card-top">
+                <span class="game-catalog-icon" aria-hidden="true">${icon}</span>
+                <div class="game-catalog-info">
+                  <div class="game-catalog-title-row">
+                    <span class="game-catalog-title">${title}</span>
+                    <span class="btn btn-primary btn-sm game-catalog-play">${t('playGameButton')} →</span>
+                  </div>
+                  <p class="game-catalog-desc">${desc}</p>
+                  <div class="game-catalog-tags">${tagsHtml}</div>
+                </div>
+              </div>
+            </a>
+          `
+        })
+        .join('')
+    }
+
+    const initialGames = getGamesCatalog()
+
+    this.card.innerHTML = `
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${returnTo !== 'none' ? `<button id="modal-games-back" class="btn btn-icon" aria-label="${t('back')}" title="${t('back')}">←</button>` : ''}
+          <h2 class="modal-title">🎮 ${t('otherGamesTitle')}</h2>
+        </div>
+        <button id="modal-close-btn" class="btn btn-icon" aria-label="${t('close')}">✕</button>
+      </div>
+      <div class="modal-body games-catalog-body">
+        <p class="feedback-desc">${t('otherGamesSubtitle')}</p>
+        <div id="games-catalog-list" class="games-catalog-list">
+          ${renderCatalogCards(initialGames)}
+        </div>
+        <p class="games-catalog-footer-hint">${t('gameSavedHint')}</p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px;">
+        ${returnTo !== 'none' ? `<button id="modal-games-back-btn" class="btn btn-secondary">← ${t('back')}</button>` : ''}
+        <button id="modal-games-close" class="btn btn-primary">${t('close')}</button>
+      </div>
+    `
+
+    const handleBack = () => {
+      if (returnTo === 'about' && s) {
+        this.showAbout(s)
+      } else if (returnTo === 'settings' && s) {
+        this.showSettings(s, this.callbacks.onSettingsChanged)
+      } else {
+        this.close()
+      }
+    }
+
+    document.getElementById('modal-games-back')?.addEventListener('click', handleBack)
+    document.getElementById('modal-games-back-btn')?.addEventListener('click', handleBack)
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
+    document.getElementById('modal-games-close')?.addEventListener('click', () => this.close())
+
+    this.open()
+    trackModalView('games')
+
+    // Refresh catalog asynchronously in background; update DOM if modal is still showing games
+    void refreshGamesCatalog().then((freshGames) => {
+      const listEl = document.getElementById('games-catalog-list')
+      if (listEl && this.isOpen()) {
+        listEl.innerHTML = renderCatalogCards(freshGames)
+      }
+    })
   }
 
   showFeedback(settings?: Settings, returnTo: 'about' | 'settings' | 'none' = 'none'): void {
