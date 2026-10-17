@@ -26,3 +26,8 @@ dist-ssr
 
 # Vite / build cache
 .vite
+
+# Environment files and credentials
+.env
+.env.*
+!.env.example

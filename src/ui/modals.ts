@@ -1,3 +1,4 @@
+import { trackFeedbackAction, trackModalView } from '../analytics'
 import { BoardSize, Difficulty, Mode, Player, Settings, Theme } from '../core/types'
 import { getLang, setLang, t } from '../i18n'
 import { StatsRecord } from '../storage'
@@ -54,21 +55,43 @@ export class ModalManager {
     })
   }
 
+  private closeTimer: number | null = null
+
   setInstallAvailable(available: boolean): void {
     this.canInstall = available
   }
 
+  private open(): void {
+    if (!this.overlay) return
+    if (this.closeTimer !== null) {
+      window.clearTimeout(this.closeTimer)
+      this.closeTimer = null
+    }
+    this.overlay.classList.remove('is-closing')
+    this.overlay.classList.remove('hidden')
+  }
+
   isOpen(): boolean {
-    return this.overlay !== null && !this.overlay.classList.contains('hidden')
+    return this.overlay !== null && !this.overlay.classList.contains('hidden') && !this.overlay.classList.contains('is-closing')
   }
 
   close(): void {
-    if (this.overlay) {
-      this.overlay.classList.add('hidden')
+    if (!this.overlay || this.overlay.classList.contains('hidden')) return
+    if (this.closeTimer !== null) {
+      window.clearTimeout(this.closeTimer)
+      this.closeTimer = null
     }
-    if (this.card) {
-      this.card.innerHTML = ''
-    }
+    this.overlay.classList.add('is-closing')
+    this.closeTimer = window.setTimeout(() => {
+      if (this.overlay && this.overlay.classList.contains('is-closing')) {
+        this.overlay.classList.add('hidden')
+        this.overlay.classList.remove('is-closing')
+        if (this.card) {
+          this.card.innerHTML = ''
+        }
+      }
+      this.closeTimer = null
+    }, 240)
   }
 
   showSettings(settings: Settings, onSettingsChanged: (s: Settings) => void): void {
@@ -179,6 +202,17 @@ export class ModalManager {
           </div>
         </div>
 
+        <!-- Anonymous analytics -->
+        <div class="setting-row" style="align-items: flex-start;">
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label class="setting-label" for="setting-analytics">${t('settingsAnalytics')}</label>
+            <span style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.3;">${t('settingsAnalyticsDesc')}</span>
+          </div>
+          <div class="setting-control">
+            <input type="checkbox" id="setting-analytics" ${settings.analytics ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+          </div>
+        </div>
+
         <!-- Extra action buttons -->
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
           <button id="btn-show-about" class="btn btn-secondary" style="flex: 1 1 45%;">📖 ${t('aboutGame')}</button>
@@ -263,6 +297,12 @@ export class ModalManager {
       onSettingsChanged({ ...settings })
     })
 
+    const analyticsCheck = document.getElementById('setting-analytics') as HTMLInputElement | null
+    analyticsCheck?.addEventListener('change', () => {
+      settings.analytics = analyticsCheck.checked
+      onSettingsChanged({ ...settings })
+    })
+
     document.getElementById('btn-show-about')?.addEventListener('click', () => {
       this.showAbout(settings)
     })
@@ -280,7 +320,8 @@ export class ModalManager {
       this.callbacks.onInstallClick?.()
     })
 
-    this.overlay.classList.remove('hidden')
+    this.open()
+    trackModalView('settings')
   }
 
   showStats(stats: StatsRecord): void {
@@ -321,7 +362,8 @@ export class ModalManager {
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
     document.getElementById('modal-close-stats')?.addEventListener('click', () => this.close())
 
-    this.overlay.classList.remove('hidden')
+    this.open()
+    trackModalView('stats')
   }
 
   private lastGameOverArgs: {
@@ -450,7 +492,7 @@ export class ModalManager {
       if (inspectBtn) inspectBtn.classList.remove('hidden')
     })
 
-    this.overlay.classList.remove('hidden')
+    this.open()
   }
 
   showConfirmNewGame(): void {
@@ -475,7 +517,7 @@ export class ModalManager {
       this.callbacks.onConfirmNewGame()
     })
 
-    this.overlay.classList.remove('hidden')
+    this.open()
   }
 
   showIosInstallModal(): void {
@@ -502,7 +544,8 @@ export class ModalManager {
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.close())
     document.getElementById('btn-ios-close')?.addEventListener('click', () => this.close())
 
-    this.overlay.classList.remove('hidden')
+    this.open()
+    trackModalView('ios_install')
   }
 
   showAbout(settings?: Settings): void {
@@ -597,7 +640,8 @@ export class ModalManager {
       }
     })
 
-    this.overlay.classList.remove('hidden')
+    this.open()
+    trackModalView('about')
   }
 
   showFeedback(settings?: Settings, returnTo: 'about' | 'settings' | 'none' = 'none'): void {
@@ -705,6 +749,7 @@ export class ModalManager {
       const body = `### Feedback Type\n${categoryName}\n\n### Message\n${message}\n\n### Contact\n${contact}\n\n### Environment\n- URL: ${window.location.href}\n- User Agent: ${navigator.userAgent}\n- Screen: ${window.innerWidth}x${window.innerHeight} (DPR: ${window.devicePixelRatio || 1})\n- Date: ${new Date().toISOString()}`
 
       const issueUrl = `https://github.com/chichaykin/Gomoku/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`
+      trackFeedbackAction(type, 'github')
       window.open(issueUrl, '_blank', 'noopener,noreferrer')
       this.callbacks.onToast?.(t('feedbackSent'))
       this.close()
@@ -721,6 +766,7 @@ export class ModalManager {
       const subject = `[Gomoku] ${type.toUpperCase()}: Feedback`
       const body = `Category: ${type}\nContact: ${contact}\n\nMessage:\n${message}\n\nDevice: ${navigator.userAgent}`
       const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      trackFeedbackAction(type, 'email')
       window.location.href = mailtoUrl
       this.callbacks.onToast?.(t('feedbackSent'))
       this.close()
@@ -735,10 +781,12 @@ export class ModalManager {
       }
 
       const formatted = `[Gomoku Feedback]\nCategory: ${type}\nContact: ${contact}\nMessage:\n${message}`
+      trackFeedbackAction(type, 'copy')
       this.copyToClipboard(formatted)
     })
 
-    this.overlay.classList.remove('hidden')
+    this.open()
+    trackModalView('feedback')
   }
 
   private copyToClipboard(text: string): void {

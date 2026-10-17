@@ -25,7 +25,8 @@ export function getDefaultSettings(): Settings {
     lang: getLang(),
     sound: true,
     haptics: true,
-    oneTapMove: !isCoarse
+    oneTapMove: !isCoarse,
+    analytics: true
   }
 }
 
@@ -55,7 +56,8 @@ export class StorageService {
         lang: (parsed.lang === 'ru' || parsed.lang === 'en') ? (parsed.lang as Lang) : defaults.lang,
         sound: typeof parsed.sound === 'boolean' ? parsed.sound : true,
         haptics: typeof parsed.haptics === 'boolean' ? parsed.haptics : true,
-        oneTapMove: typeof parsed.oneTapMove === 'boolean' ? parsed.oneTapMove : defaults.oneTapMove
+        oneTapMove: typeof parsed.oneTapMove === 'boolean' ? parsed.oneTapMove : defaults.oneTapMove,
+        analytics: typeof parsed.analytics === 'boolean' ? parsed.analytics : true
       }
     } catch {
       return defaults

@@ -28,4 +28,5 @@ export interface Settings {
   sound: boolean
   haptics: boolean
   oneTapMove: boolean
+  analytics: boolean
 }

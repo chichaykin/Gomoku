@@ -97,7 +97,9 @@ export const enDict = {
   feedbackCopyFailed: 'Could not copy to clipboard',
   feedbackEmptyWarning: 'Please write a message before sending.',
   feedbackSent: 'Thank you for your feedback!',
-  back: 'Back'
+  back: 'Back',
+  settingsAnalytics: 'Anonymous analytics',
+  settingsAnalyticsDesc: 'Helps improve the game (no personal data)'
 } as const
 
 export type Key = keyof typeof enDict
@@ -199,7 +201,9 @@ export const ruDict: Record<Key, string> = {
   feedbackCopyFailed: 'Не удалось скопировать в буфер обмена',
   feedbackEmptyWarning: 'Пожалуйста, напишите текст сообщения перед отправкой.',
   feedbackSent: 'Спасибо за ваш отзыв!',
-  back: 'Назад'
+  back: 'Назад',
+  settingsAnalytics: 'Анонимная аналитика',
+  settingsAnalyticsDesc: 'Помогает улучшать игру (без персональных данных)'
 }
 
 let currentLang: Lang = (() => {

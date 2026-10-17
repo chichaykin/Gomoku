@@ -1,4 +1,17 @@
 import { registerSW } from 'virtual:pwa-register'
+import {
+  countTotalCompletedGames,
+  initAnalytics,
+  loadTelemetry,
+  recordPvpGameCompleted,
+  setAnalyticsConsent,
+  trackGameEnd,
+  trackGameStart,
+  trackPwaInstallPrompt,
+  trackPwaInstalled,
+  trackSettingsChange,
+  trackUndoUsed
+} from './analytics'
 import { AiClient } from './ai/aiClient'
 import { Game } from './core/game'
 import { Difficulty, Player, Settings, WHITE } from './core/types'
@@ -39,6 +52,9 @@ sound.enabled = settings.sound
 haptics.enabled = settings.haptics
 setLang(settings.lang)
 applyTheme(settings.theme)
+
+// Initialize GA4 telemetry
+initAnalytics(settings, storage.loadStats())
 
 // Game Core
 const game = new Game(settings.size)
@@ -114,13 +130,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.addEventListener('appinstalled', () => {
   deferredPrompt = null
   modals.setInstallAvailable(false)
+  trackPwaInstalled()
   hud.showToast('App installed!')
 })
 
 function triggerInstallPrompt(): void {
   if (deferredPrompt) {
     deferredPrompt.prompt()
-    deferredPrompt.userChoice.then(() => {
+    deferredPrompt.userChoice.then((choice) => {
+      trackPwaInstallPrompt(choice.outcome)
       deferredPrompt = null
       modals.setInstallAvailable(false)
     })
@@ -188,6 +206,7 @@ function handleCycleDifficulty(): void {
   const nextIdx = (order.indexOf(settings.difficulty) + 1) % order.length
   settings.difficulty = order[nextIdx]
   storage.saveSettings(settings)
+  trackSettingsChange('difficulty', settings.difficulty)
   hud.updateDifficulty(settings.difficulty, settings.mode)
   const names: Record<Difficulty, string> = {
     easy: t('diffEasy'),
@@ -222,6 +241,15 @@ function handlePlayerMove(x: number, y: number): void {
 function postMoveProcessing(): void {
   updateHudTurn()
   renderCurrent()
+
+  if (game.state.moves.length === 1) {
+    trackGameStart({
+      mode: settings.mode,
+      difficulty: settings.mode === 'ai' ? settings.difficulty : undefined,
+      board_size: settings.size,
+      human_color: settings.mode === 'ai' ? settings.humanColor : undefined
+    })
+  }
 
   if (game.state.status === 'won') {
     handleGameWon()
@@ -287,7 +315,23 @@ function handleGameWon(): void {
 
   if (settings.mode === 'ai') {
     storage.recordGameResult(settings.difficulty, humanWon ? 'win' : 'loss')
+  } else {
+    recordPvpGameCompleted()
   }
+
+  const currentStats = storage.loadStats()
+  const pvpGames = loadTelemetry().pvpGames
+  const totalGames = countTotalCompletedGames(currentStats, pvpGames)
+
+  trackGameEnd({
+    mode: settings.mode,
+    difficulty: settings.mode === 'ai' ? settings.difficulty : undefined,
+    board_size: settings.size,
+    result: settings.mode === 'ai' ? (humanWon ? 'win' : 'loss') : 'win',
+    moves_count: game.state.moves.length,
+    elapsed_seconds: hud.getElapsedSeconds(),
+    total_games: totalGames
+  })
 
   const statsSummary = {
     elapsedSeconds: hud.getElapsedSeconds(),
@@ -306,7 +350,23 @@ function handleGameDraw(): void {
 
   if (settings.mode === 'ai') {
     storage.recordGameResult(settings.difficulty, 'draw')
+  } else {
+    recordPvpGameCompleted()
   }
+
+  const currentStats = storage.loadStats()
+  const pvpGames = loadTelemetry().pvpGames
+  const totalGames = countTotalCompletedGames(currentStats, pvpGames)
+
+  trackGameEnd({
+    mode: settings.mode,
+    difficulty: settings.mode === 'ai' ? settings.difficulty : undefined,
+    board_size: settings.size,
+    result: 'draw',
+    moves_count: game.state.moves.length,
+    elapsed_seconds: hud.getElapsedSeconds(),
+    total_games: totalGames
+  })
 
   const statsSummary = {
     elapsedSeconds: hud.getElapsedSeconds(),
@@ -321,6 +381,7 @@ function handleGameDraw(): void {
 
 function handleUndo(): void {
   sound.playClick()
+  trackUndoUsed({ mode: settings.mode, moves_count: game.state.moves.length })
   aiClient.cancelCurrentThinking()
   inputController.clearGhost()
   document.getElementById('btn-inspect-return')?.classList.add('hidden')
@@ -374,6 +435,31 @@ function onSettingsChanged(newSettings: Settings): void {
   const modeChanged = newSettings.mode !== settings.mode
   const colorChanged = newSettings.humanColor !== settings.humanColor
   const themeChanged = newSettings.theme !== settings.theme
+  const analyticsChanged = newSettings.analytics !== settings.analytics
+
+  if (analyticsChanged) {
+    setAnalyticsConsent(newSettings.analytics)
+    trackSettingsChange('analytics', newSettings.analytics)
+  }
+  if (sizeChanged) trackSettingsChange('size', newSettings.size)
+  if (modeChanged) trackSettingsChange('mode', newSettings.mode)
+  if (colorChanged) trackSettingsChange('humanColor', newSettings.humanColor)
+  if (themeChanged) trackSettingsChange('theme', newSettings.theme)
+  if (newSettings.difficulty !== settings.difficulty) {
+    trackSettingsChange('difficulty', newSettings.difficulty)
+  }
+  if (newSettings.lang !== settings.lang) {
+    trackSettingsChange('lang', newSettings.lang)
+  }
+  if (newSettings.sound !== settings.sound) {
+    trackSettingsChange('sound', newSettings.sound)
+  }
+  if (newSettings.haptics !== settings.haptics) {
+    trackSettingsChange('haptics', newSettings.haptics)
+  }
+  if (newSettings.oneTapMove !== settings.oneTapMove) {
+    trackSettingsChange('oneTapMove', newSettings.oneTapMove)
+  }
 
   settings = newSettings
   sound.enabled = settings.sound

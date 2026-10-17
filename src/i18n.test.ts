@@ -57,4 +57,14 @@ describe('i18n module', () => {
     expect(t('back')).toBe('Назад')
     expect(t('feedbackViaGithub')).toContain('GitHub')
   })
+
+  it('provides analytics toggle strings in selected language', () => {
+    setLang('en')
+    expect(t('settingsAnalytics')).toBe('Anonymous analytics')
+    expect(t('settingsAnalyticsDesc')).toContain('personal data')
+
+    setLang('ru')
+    expect(t('settingsAnalytics')).toBe('Анонимная аналитика')
+    expect(t('settingsAnalyticsDesc')).toContain('персональных данных')
+  })
 })
